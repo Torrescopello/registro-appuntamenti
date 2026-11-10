@@ -191,11 +191,11 @@ td.conv{font-family:var(--f-data)}
 @media (max-width:700px){.addteam{grid-template-columns:minmax(0,1fr)}}
 .linkbox{display:flex;gap:8px;flex-wrap:wrap}
 .linkbox input{flex:1 1 260px;font-family:var(--f-data);font-size:14px}
-.versione{font-size:13px;color:var(--muted);text-align:center}
-.versione summary{cursor:pointer;display:inline-block;padding:8px 12px;min-height:44px;line-height:28px;border-radius:8px}
-.versione summary:hover{color:var(--ink)}
-.versione .vnum{font-family:var(--f-data)}
-.novita{text-align:left;max-width:640px;margin:8px auto 0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 18px;display:flex;flex-direction:column;gap:12px}
+.versione{position:relative;font-size:12px;color:var(--muted);margin-top:2px}
+.versione summary{cursor:pointer;list-style:none;display:inline-block;padding:2px 0;font-family:var(--f-data)}
+.versione summary::-webkit-details-marker{display:none}
+.versione summary:hover{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.novita{position:absolute;left:0;top:calc(100% + 6px);z-index:20;width:min(560px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);font-size:13px;color:var(--ink)}
 .novita h4{margin:0;font-size:14px;color:var(--ink);font-weight:600}
 .novita h4 span{font-weight:400;color:var(--muted);margin-left:6px}
 .novita ul{margin:4px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:2px}
@@ -210,9 +210,9 @@ td.conv{font-family:var(--f-data)}
     <div>
       <div class="eyebrow">Torre di Scopello</div>
       <h1>Registro Appuntamenti</h1>
+      <div class="versione">Versione <span class="vnum"></span></div>
     </div>
     <div id="auth-body"></div>
-    <div class="versione">Versione <span class="vnum"></span></div>
   </div>
 </div>
 
@@ -222,6 +222,7 @@ td.conv{font-family:var(--f-data)}
     <div>
       <div class="eyebrow">Torre di Scopello · Appuntamenti e storico</div>
       <h1>Registro Appuntamenti</h1>
+      <details class="versione"><summary>Versione <span class="vnum"></span></summary><div class="novita"></div></details>
     </div>
     <div class="actions">
       <span class="whoami" id="whoami"></span>
@@ -331,7 +332,6 @@ td.conv{font-family:var(--f-data)}
     <div class="statsec"><div class="tablewrap"><table class="team" id="team"></table></div></div>
   </section>
 
-  <footer class="versione"><details><summary>Versione <span class="vnum"></span> · Novità</summary><div class="novita"></div></details></footer>
 </div>
 
 <script src="config.js"></script>
@@ -358,8 +358,9 @@ const NOTE_TIPI=['Nota','Email','Telefonata','Videochiamata','Visita','Proposta'
 /* ---------- VERSIONE ----------
    A ogni modifica: aumentare VERSIONE, aggiungere la voce in cima a NOVITA
    e aggiornare CACHE in sw.js con lo stesso numero. */
-const VERSIONE='1.0';
+const VERSIONE='1.1';
 const NOVITA=[
+  {v:'1.1',d:'10 novembre 2026',t:['Il numero di versione è ora piccolo, sotto il titolo: toccalo per vedere le novità.']},
   {v:'1.0',d:'10 novembre 2026',t:[
     'Prima versione online, con accesso protetto e archivio su server in Europa.',
     'Schede delle coppie: provenienza, canale, data desiderata, ospiti, budget, pacchetto.',
@@ -996,6 +997,7 @@ document.addEventListener('change',e=>{
   const at=e.target.dataset&&e.target.dataset.attivo;if(at){patchTeam(at,{attivo:e.target.checked});return}
 });
 document.addEventListener('click',e=>{
+  const vd=document.querySelector('details.versione');if(vd&&vd.open&&!e.target.closest('details.versione'))vd.open=false;
   const au=e.target.closest('[data-auth]');
   if(au){const m=au.dataset.auth;if(m==='esci'){api.signOut().then(()=>showAuth('entra'))}else{authMsg='';showAuth(m)}return}
   const tab=e.target.closest('[data-view]');if(tab){setView(tab.dataset.view,true);return}
