@@ -9,7 +9,7 @@ Si apre dal browser su iPad, telefono e computer e si installa sulla schermata H
 - `index.html`: l'app (pagina unica, nessuna compilazione).
 - `config.js`: indirizzo e chiave pubblica del database Supabase. Se vuoti, l'app parte in **modalità prova** con dati di esempio.
 - `supabase/schema.sql`: tabelle, regole di accesso e controllo delle registrazioni.
-- `lib/`: libreria ufficiale Supabase (versione 2.45.4), inclusa per non dipendere da servizi esterni.
+- `lib/`: libreria ufficiale Supabase (versione 2.99.3), inclusa per non dipendere da servizi esterni.
 - `manifest.json`, `sw.js`, `icons/`: installazione sulla schermata Home.
 
 ## Sicurezza
