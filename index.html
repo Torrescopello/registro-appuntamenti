@@ -191,6 +191,14 @@ td.conv{font-family:var(--f-data)}
 @media (max-width:700px){.addteam{grid-template-columns:minmax(0,1fr)}}
 .linkbox{display:flex;gap:8px;flex-wrap:wrap}
 .linkbox input{flex:1 1 260px;font-family:var(--f-data);font-size:14px}
+.versione{font-size:13px;color:var(--muted);text-align:center}
+.versione summary{cursor:pointer;display:inline-block;padding:8px 12px;min-height:44px;line-height:28px;border-radius:8px}
+.versione summary:hover{color:var(--ink)}
+.versione .vnum{font-family:var(--f-data)}
+.novita{text-align:left;max-width:640px;margin:8px auto 0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 18px;display:flex;flex-direction:column;gap:12px}
+.novita h4{margin:0;font-size:14px;color:var(--ink);font-weight:600}
+.novita h4 span{font-weight:400;color:var(--muted);margin-left:6px}
+.novita ul{margin:4px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:2px}
 @media (prefers-reduced-motion:no-preference){.list li button,button,.agrow{transition:background .15s,border-color .15s}}
 </style>
 </head>
@@ -204,6 +212,7 @@ td.conv{font-family:var(--f-data)}
       <h1>Registro Appuntamenti</h1>
     </div>
     <div id="auth-body"></div>
+    <div class="versione">Versione <span class="vnum"></span></div>
   </div>
 </div>
 
@@ -321,6 +330,8 @@ td.conv{font-family:var(--f-data)}
     </div>
     <div class="statsec"><div class="tablewrap"><table class="team" id="team"></table></div></div>
   </section>
+
+  <footer class="versione"><details><summary>Versione <span class="vnum"></span> · Novità</summary><div class="novita"></div></details></footer>
 </div>
 
 <script src="config.js"></script>
@@ -344,6 +355,19 @@ const PACCHETTI=['Da definire','Base','Premium','Luxury'];
 const LINGUE=['Inglese','Italiano','Tedesco','Francese','Spagnolo','Altra'];
 const PAESI=['Stati Uniti','Canada','Regno Unito','Germania','Italia','Australia','Svizzera','Francia','Paesi Bassi','Irlanda','Austria','Belgio','Svezia','Norvegia','Danimarca','Emirati Arabi Uniti','India','Messico','Brasile'];
 const NOTE_TIPI=['Nota','Email','Telefonata','Videochiamata','Visita','Proposta','Contratto'];
+/* ---------- VERSIONE ----------
+   A ogni modifica: aumentare VERSIONE, aggiungere la voce in cima a NOVITA
+   e aggiornare CACHE in sw.js con lo stesso numero. */
+const VERSIONE='1.0';
+const NOVITA=[
+  {v:'1.0',d:'10 novembre 2026',t:[
+    'Prima versione online, con accesso protetto e archivio su server in Europa.',
+    'Schede delle coppie: provenienza, canale, data desiderata, ospiti, budget, pacchetto.',
+    'Appuntamenti con data, ora, tipo, esito e "Fatto da" libero.',
+    'Agenda di tutti gli appuntamenti, statistiche mensili e annuali con conversione a contratto, per persona e per canale.',
+    'Storia di ogni coppia, esportazione CSV, numero di versione con l\'elenco delle novità.'
+  ]}
+];
 const MESI=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 const CAMPI_COPPIA=['sposo1','sposo2','email','telefono','paese','citta','lingua','fonte','fonte_dettaglio','primo_contatto','data_matrimonio','data_flessibile','ospiti','budget','pacchetto','marina','stato','data_firma','note'];
 
@@ -1013,6 +1037,8 @@ setInterval(()=>{if(me&&!busy&&document.visibilityState==='visible')reload()},12
 /* ============================================================
    AVVIO
    ============================================================ */
+document.querySelectorAll('.vnum').forEach(el=>el.textContent=VERSIONE);
+document.querySelector('.novita').innerHTML=NOVITA.map(n=>`<div><h4>Versione ${esc(n.v)}<span>${esc(n.d)}</span></h4><ul>${n.t.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`).join('');
 (async function boot(){
   const recovering=/type=recovery/.test(location.hash);
   if(api.demo){me=await api.me();showApp();await reload();return}
