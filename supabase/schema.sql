@@ -136,7 +136,11 @@ create policy eventi_leggi   on public.eventi for select to authenticated using 
 create policy eventi_crea    on public.eventi for insert to authenticated with check (public.is_staff());
 create policy eventi_elimina on public.eventi for delete to authenticated using (public.is_admin());
 
--- Nessun accesso per chi non ha fatto l'accesso
+-- Permessi delle tabelle: solo per chi ha fatto l'accesso (le regole sopra
+-- decidono poi cosa può vedere). Nessun accesso per chi non ha fatto l'accesso.
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on public.staff, public.coppie, public.appuntamenti, public.eventi to authenticated;
+grant execute on function public.mia_email(), public.is_staff(), public.is_admin() to authenticated;
 revoke all on public.staff, public.coppie, public.appuntamenti, public.eventi from anon;
 
 -- ---------- Solo le email della Squadra possono creare un account ----------
