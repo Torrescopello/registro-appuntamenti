@@ -1,6 +1,6 @@
 {
-  "name": "Registro Sposi · Torre di Scopello",
-  "short_name": "Registro Sposi",
+  "name": "Registro Appuntamenti · Torre di Scopello",
+  "short_name": "Appuntamenti",
   "description": "Coppie, appuntamenti e storico delle trattative di Torre di Scopello",
   "start_url": "./index.html",
   "scope": "./",

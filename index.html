@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Registro Sposi · Torre di Scopello</title>
+<title>Registro Appuntamenti · Torre di Scopello</title>
 <meta name="theme-color" content="#1E5566">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Registro Sposi">
+<meta name="apple-mobile-web-app-title" content="Registro Appuntamenti">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icons/icon-192.png">
@@ -201,7 +201,7 @@ td.conv{font-family:var(--f-data)}
   <div class="authcard">
     <div>
       <div class="eyebrow">Torre di Scopello</div>
-      <h1>Registro Sposi</h1>
+      <h1>Registro Appuntamenti</h1>
     </div>
     <div id="auth-body"></div>
   </div>
@@ -212,7 +212,7 @@ td.conv{font-family:var(--f-data)}
   <header class="top">
     <div>
       <div class="eyebrow">Torre di Scopello · Appuntamenti e storico</div>
-      <h1>Registro Sposi</h1>
+      <h1>Registro Appuntamenti</h1>
     </div>
     <div class="actions">
       <span class="whoami" id="whoami"></span>
@@ -953,7 +953,7 @@ function exportCsv(){
     if(k==='marina')return cell(r.marina?'Sì':'No');
     return cell(r[k]);
   }).join(';')));
-  downloadCsv('registro-sposi',lines);
+  downloadCsv('registro-appuntamenti',lines);
 }
 function exportAgenda(){
   const lines=[['Data','Ora','Coppia','Tipo','Fatto da','Esito','Nota','Paese','Canale','Stato coppia'].map(cell).join(';')];

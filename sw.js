@@ -1,6 +1,6 @@
 // Service worker: rende l'app installabile e veloce da aprire.
 // I dati NON vengono mai messi in cache: arrivano sempre freschi da Supabase.
-const CACHE = 'registro-sposi-v1';
+const CACHE = 'registro-appuntamenti-v1';
 const ASSETS = ['./', './index.html', './config.js', './lib/supabase.js', './lib/591.supabase.js', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', e => {

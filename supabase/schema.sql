@@ -1,5 +1,5 @@
 -- ============================================================
--- Registro Sposi · Torre di Scopello
+-- Registro Appuntamenti · Torre di Scopello
 -- Struttura del database (Supabase / PostgreSQL)
 -- ============================================================
 -- Come usarlo:
