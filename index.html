@@ -185,12 +185,6 @@ td.conv{font-family:var(--f-data)}
 .note{font-size:13px;color:var(--muted);margin:0;max-width:75ch}
 .warnbox{font-size:14px;padding:10px 12px;border-radius:8px;background:var(--warn-bg);color:var(--warn)}
 
-.team td{vertical-align:middle}
-.team select{width:auto;min-width:120px}
-.addteam{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;align-items:end}
-@media (max-width:700px){.addteam{grid-template-columns:minmax(0,1fr)}}
-.linkbox{display:flex;gap:8px;flex-wrap:wrap}
-.linkbox input{flex:1 1 260px;font-family:var(--f-data);font-size:14px}
 .versione{position:relative;font-size:12px;color:var(--muted);margin-top:2px}
 .versione summary{cursor:pointer;list-style:none;display:inline-block;padding:2px 0;font-family:var(--f-data)}
 .versione summary::-webkit-details-marker{display:none}
@@ -246,7 +240,6 @@ td.conv{font-family:var(--f-data)}
     <button type="button" role="tab" data-view="coppie" id="tab-coppie">Coppie</button>
     <button type="button" role="tab" data-view="agenda" id="tab-agenda">Agenda<span class="n" id="tab-agenda-n"></span></button>
     <button type="button" role="tab" data-view="statistiche" id="tab-statistiche">Statistiche</button>
-    <button type="button" role="tab" data-view="squadra" id="tab-squadra" hidden>Squadra</button>
   </nav>
 
   <section id="view-coppie">
@@ -313,24 +306,6 @@ td.conv{font-family:var(--f-data)}
     </div>
   </section>
 
-  <section id="view-squadra" class="panel" hidden>
-    <div class="statsec">
-      <div class="sec-title">Chi può usare il registro</div>
-      <p class="note">Per far entrare una persona: aggiungi qui il suo nome e la sua email, poi mandale il link qui sotto. Al primo accesso sceglie «Primo accesso» e crea la sua password. Se una persona non lavora più con voi, togli la spunta «Attivo»: non potrà più entrare, ma i suoi appuntamenti restano nello storico.</p>
-      <div class="linkbox"><input id="app-link" readonly aria-label="Link dell'app"><button type="button" id="btn-copy">Copia link</button></div>
-    </div>
-    <div class="statsec">
-      <form id="team-form" class="addteam" novalidate>
-        <div class="f"><label for="t-nome">Nome</label><input id="t-nome" autocomplete="off" placeholder="es. Gabriele"></div>
-        <div class="f"><label for="t-email">Email</label><input id="t-email" type="email" autocomplete="off" autocapitalize="off" placeholder="nome@esempio.it"></div>
-        <div class="f"><label for="t-ruolo">Ruolo</label><select id="t-ruolo"><option value="staff">Collaboratore</option><option value="admin">Amministratore</option></select></div>
-        <button type="submit" class="primary">Aggiungi</button>
-      </form>
-      <span id="team-msg"></span>
-      <p class="note">Gli amministratori gestiscono la Squadra e possono eliminare le schede. I collaboratori fanno tutto il resto.</p>
-    </div>
-    <div class="statsec"><div class="tablewrap"><table class="team" id="team"></table></div></div>
-  </section>
 
 </div>
 
@@ -358,8 +333,9 @@ const NOTE_TIPI=['Nota','Email','Telefonata','Videochiamata','Visita','Proposta'
 /* ---------- VERSIONE ----------
    A ogni modifica: aumentare VERSIONE, aggiungere la voce in cima a NOVITA
    e aggiornare CACHE in sw.js con lo stesso numero. */
-const VERSIONE='1.1';
+const VERSIONE='1.2';
 const NOVITA=[
+  {v:'1.2',d:'10 novembre 2026',t:['Tolta la scheda Squadra per un\'app più semplice. Restano Coppie, Agenda e Statistiche.']},
   {v:'1.1',d:'10 novembre 2026',t:['Il numero di versione è ora piccolo, sotto il titolo: toccalo per vedere le novità.']},
   {v:'1.0',d:'10 novembre 2026',t:[
     'Prima versione online, con accesso protetto e archivio su server in Europa.',
@@ -500,7 +476,7 @@ function errText(e){
 async function reload(){
   try{setData(await api.loadAll());notice('')}
   catch(e){notice('Non riesco a caricare il registro. '+errText(e))}
-  renderList();renderStats();renderAgenda();renderStatistiche();renderSquadra();
+  renderList();renderStats();renderAgenda();renderStatistiche();
   if(!dirty&&mode==='edit'){if(!rows.find(x=>x.id===selId)){mode=null;selId=null}renderDetail()}
   else if(!mode)renderDetail();
 }
@@ -519,7 +495,7 @@ function renderAuth(){
     <div class="f"><label for="a-pw">Password</label><input id="a-pw" type="password" autocomplete="current-password"></div>
     <button type="submit" class="primary">Entra</button></form>
     <div class="links"><button type="button" class="link" data-auth="primo">Primo accesso</button><button type="button" class="link" data-auth="dimenticata">Password dimenticata?</button></div>`;
-  else if(authMode==='primo')b.innerHTML=`<p>Usa l'email che l'amministratore ha inserito nella Squadra e scegli una password di almeno 8 caratteri.</p>${msg}
+  else if(authMode==='primo')b.innerHTML=`<p>Usa l'email autorizzata dall'amministratore e scegli una password di almeno 8 caratteri.</p>${msg}
     <form id="f-auth" novalidate><div class="f"><label for="a-email">Email</label><input id="a-email" type="email" autocomplete="username" autocapitalize="off" value="${email}"></div>
     <div class="f"><label for="a-pw">Nuova password</label><input id="a-pw" type="password" autocomplete="new-password" minlength="8"></div>
     <button type="submit" class="primary">Crea il mio accesso</button></form>
@@ -531,7 +507,7 @@ function renderAuth(){
   else if(authMode==='nuovapw')b.innerHTML=`<p>Scegli la tua nuova password, di almeno 8 caratteri.</p>${msg}
     <form id="f-auth" novalidate><div class="f"><label for="a-pw">Nuova password</label><input id="a-pw" type="password" autocomplete="new-password" minlength="8"></div>
     <button type="submit" class="primary">Salva la password</button></form>`;
-  else if(authMode==='negato')b.innerHTML=`${msg||'<div class="msg-err">Il tuo account non è attivo nella Squadra. Chiedi a chi gestisce il registro di aggiungerti o di riattivarti.</div>'}
+  else if(authMode==='negato')b.innerHTML=`${msg||'<div class="msg-err">Il tuo account non è autorizzato. Chiedi a chi gestisce il registro di abilitarlo.</div>'}
     <button type="button" data-auth="esci">Esci</button>`;
 }
 async function submitAuth(){
@@ -560,7 +536,7 @@ async function submitAuth(){
     const m=String(err&&err.message||'');
     if(/Invalid login/i.test(m))authMsg='!Email o password non corrette.';
     else if(/Email not confirmed/i.test(m))authMsg='!Devi prima confermare l\'email: apri il link che ti abbiamo mandato.';
-    else if(/Database error|not authori|non è autorizzata/i.test(m))authMsg='!Questa email non è nella Squadra. Chiedi all\'amministratore di aggiungerti, poi riprova.';
+    else if(/Database error|not authori|non è autorizzata/i.test(m))authMsg='!Questa email non è autorizzata. Chiedi all\'amministratore di abilitarla, poi riprova.';
     else if(/rate limit|security purposes/i.test(m))authMsg='!Troppi tentativi ravvicinati. Aspetta qualche minuto e riprova.';
     else if(/Password should|weak/i.test(m))authMsg='!Password troppo debole: usa almeno 8 caratteri, con lettere e numeri.';
     else authMsg='!'+errText(err);
@@ -578,7 +554,6 @@ function showApp(){
   $('auth').hidden=true;$('app').hidden=false;
   $('whoami').innerHTML='Ciao <b>'+esc(me.nome)+'</b>';
   $('demo').hidden=!api.demo;$('btn-logout').hidden=api.demo;
-  $('tab-squadra').hidden=!isAdmin();
   setView(location.hash.slice(1)||'coppie',false);
   renderAll();
 }
@@ -586,13 +561,13 @@ function showApp(){
 /* ============================================================
    NAVIGAZIONE
    ============================================================ */
-const VIEWS=['coppie','agenda','statistiche','squadra'];
+const VIEWS=['coppie','agenda','statistiche'];
 function setView(v,push){
-  if(!VIEWS.includes(v)||(v==='squadra'&&!isAdmin()))v='coppie';
+  if(!VIEWS.includes(v))v='coppie';
   view=v;
   VIEWS.forEach(k=>{$('view-'+k).hidden=k!==v;$('tab-'+k).setAttribute('aria-selected',k===v)});
   if(push&&location.hash!=='#'+v){try{history.replaceState(null,'','#'+v)}catch(e){location.hash=v}}
-  renderAgenda();renderStatistiche();renderSquadra();
+  renderAgenda();renderStatistiche();
 }
 window.addEventListener('hashchange',()=>{if(me)setView(location.hash.slice(1),false)});
 
@@ -937,27 +912,6 @@ function renderStatistiche(){
 window.__registroStats=computeStats;
 
 /* ============================================================
-   SQUADRA
-   ============================================================ */
-function renderSquadra(){
-  if(view!=='squadra'||!isAdmin())return;
-  $('app-link').value=appUrl();
-  $('team').innerHTML=`<thead><tr><th>Nome</th><th>Email</th><th>Ruolo</th><th>Attivo</th></tr></thead><tbody>${staff.map(s=>`<tr>
-    <td>${esc(s.nome)}</td><td>${esc(s.email)}</td>
-    <td><select data-ruolo="${esc(s.email)}" aria-label="Ruolo di ${esc(s.nome)}"${s.email===me.email?' disabled':''}><option value="staff"${s.ruolo==='staff'?' selected':''}>Collaboratore</option><option value="admin"${s.ruolo==='admin'?' selected':''}>Amministratore</option></select></td>
-    <td><input type="checkbox" data-attivo="${esc(s.email)}" aria-label="${esc(s.nome)} attivo"${s.attivo?' checked':''}${s.email===me.email?' disabled':''} style="width:22px;height:22px;min-height:0"></td></tr>`).join('')}</tbody>`;
-}
-async function addTeam(){
-  const nome=$('t-nome').value.trim(), email=$('t-email').value.trim().toLowerCase(), ruolo=$('t-ruolo').value;
-  if(!nome||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){setMsg('team-msg','Inserisci un nome e un\'email valida.','err');return}
-  try{await api.upsertStaff({email,nome,ruolo,attivo:true});$('t-nome').value='';$('t-email').value='';setMsg('team-msg',nome+' aggiunto. Mandagli il link dell\'app: al primo accesso sceglie «Primo accesso».','saved');await reload()}
-  catch(e){setMsg('team-msg',errText(e),'err')}
-}
-async function patchTeam(email,patch){
-  try{await api.updateStaff(email,patch);await reload()}catch(e){setMsg('team-msg',errText(e),'err');renderSquadra()}
-}
-
-/* ============================================================
    ESPORTAZIONE CSV
    ============================================================ */
 const cell=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
@@ -988,13 +942,11 @@ function exportAgenda(){
 /* ============================================================
    EVENTI
    ============================================================ */
-function renderAll(){renderList();renderStats();renderDetail();renderAgenda();renderStatistiche();renderSquadra()}
+function renderAll(){renderList();renderStats();renderDetail();renderAgenda();renderStatistiche()}
 function openCouple(id){selId=id;mode='edit';setView('coppie',true);renderList();renderDetail();window.scrollTo({top:$('main').offsetTop-10})}
 document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('#form'))dirty=true});
 document.addEventListener('change',e=>{
   if(e.target.closest&&e.target.closest('#form'))dirty=true;
-  const r=e.target.dataset&&e.target.dataset.ruolo;if(r){patchTeam(r,{ruolo:e.target.value});return}
-  const at=e.target.dataset&&e.target.dataset.attivo;if(at){patchTeam(at,{attivo:e.target.checked});return}
 });
 document.addEventListener('click',e=>{
   const vd=document.querySelector('details.versione');if(vd&&vd.open&&!e.target.closest('details.versione'))vd.open=false;
@@ -1016,8 +968,6 @@ document.addEventListener('click',e=>{
   if(id==='btn-export'){exportCsv();return}
   if(id==='btn-export-ag'){exportAgenda();return}
   if(id==='btn-logout'){api.signOut().then(()=>{me=null;showAuth('entra')});return}
-  if(id==='btn-copy'){const inp=$('app-link');const done=()=>setMsg('team-msg','Link copiato.','saved');
-    if(navigator.clipboard)navigator.clipboard.writeText(inp.value).then(done,()=>{inp.select()});else{inp.select();document.execCommand&&document.execCommand('copy');done()}return}
   if(id==='btn-del'){$('del-zone').innerHTML='<span class="confirm">Eliminare per sempre questa scheda e i suoi appuntamenti? <button type="button" class="danger" id="btn-del-yes">Sì, elimina</button><button type="button" id="btn-del-no">Annulla</button></span>';return}
   if(id==='btn-del-no'){renderDetail();return}
   if(id==='btn-del-yes'){del();return}
@@ -1026,7 +976,6 @@ document.addEventListener('submit',e=>{
   e.preventDefault();
   if(e.target.id==='form')save();
   else if(e.target.id==='f-auth')submitAuth();
-  else if(e.target.id==='team-form')addTeam();
 });
 $('q').addEventListener('input',e=>{q=e.target.value;renderList()});
 $('sort').addEventListener('change',e=>{sortBy=e.target.value;renderList()});

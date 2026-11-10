@@ -14,9 +14,9 @@ Si apre dal browser su iPad, telefono e computer e si installa sulla schermata H
 
 ## Sicurezza
 
-- I dati delle coppie si leggono solo dopo l'accesso, e solo se l'email è attiva nella tabella `staff` (la Squadra).
-- Solo le email presenti nella Squadra possono creare un account.
-- I collaboratori lavorano su coppie, appuntamenti e storia; gli amministratori gestiscono la Squadra e possono eliminare le schede.
+- I dati delle coppie si leggono solo dopo l'accesso, e solo se l'email è attiva nella tabella `staff` (gli accessi autorizzati).
+- Solo le email autorizzate nella tabella `staff` possono creare un account.
+- I collaboratori lavorano su coppie, appuntamenti e storia; gli amministratori possono anche eliminare le schede.
 - La chiave in `config.js` è la chiave pubblica `anon`: è normale che sia visibile. Non inserire mai la chiave `service_role`.
 
 ## Messa in funzione
@@ -26,7 +26,7 @@ Si apre dal browser su iPad, telefono e computer e si installa sulla schermata H
 3. **Supabase > Project Settings > API**: copia *Project URL* e la chiave *anon public* dentro `config.js`.
 4. **GitHub > Settings > Pages**: pubblica dal ramo `main`, cartella `/ (root)`.
 5. Apri l'app, scegli **Primo accesso**, usa la tua email, conferma dal messaggio ricevuto ed entra.
-6. Dalla scheda **Squadra** aggiungi i colleghi e mandagli il link.
+6. Per dare un accesso personale a un collega: Supabase > SQL Editor, `insert into public.staff (email, nome) values ('email@esempio.it', 'Nome');` poi il collega apre l'app e sceglie **Primo accesso**. Per toglierlo: `update public.staff set attivo = false where email = 'email@esempio.it';`
 
 ## Come contano le statistiche
 
