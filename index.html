@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Registro Sposi · Torre di Scopello</title>
+<meta name="theme-color" content="#1E5566">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Registro Sposi">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#EEF0EE; --surface:#FBFBF9; --sunk:#E3E7E6; --ink:#1B2628; --muted:#5E6B6C; --line:#CBD3D2;
+  --sea:#1E5566; --sea-soft:#D6E6EA; --sea-ink:#FFFFFF; --gold:#9A7A3E;
+  --ok:#2F6B45; --ok-bg:#DCEBDF; --warn:#8A5A12; --warn-bg:#F3E6CC; --bad:#8E3B33; --bad-bg:#F2DCD8; --info-bg:#DDE5EE; --info:#2E4F78;
+  --f-display:"Marcellus", "Cormorant Garamond", Georgia, serif;
+  --f-body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-data:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#111819; --surface:#182123; --sunk:#0E1415; --ink:#E5EBEA; --muted:#93A2A3; --line:#2C3A3C;
+  --sea:#6FB2C6; --sea-soft:#1D3940; --sea-ink:#0B1517; --gold:#CDAE6F;
+  --ok:#8FD0A3; --ok-bg:#1C3326; --warn:#E5BC72; --warn-bg:#3A2D14; --bad:#EC9A90; --bad-bg:#3D1F1C; --info-bg:#1D2A3B; --info:#9DBBE3;
+  color-scheme:dark;
+}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent;
+  padding-top:max(20px,env(safe-area-inset-top,0px));padding-bottom:max(48px,env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(28px,4vw,38px);margin:2px 0 0;line-height:1.1;text-wrap:balance}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.whoami{font-size:14px;color:var(--muted)}
+.whoami b{color:var(--ink);font-weight:600}
+button{font:inherit;font-size:15px;font-weight:500;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:10px 16px;min-height:44px;cursor:pointer;touch-action:manipulation}
+button:hover{border-color:var(--sea)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+button.primary{background:var(--sea);color:var(--sea-ink);border-color:var(--sea)}
+button.danger{color:var(--bad);border-color:var(--bad)}
+button.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+button.link{border:0;background:none;color:var(--sea);padding:6px 0;min-height:0;text-decoration:underline;text-underline-offset:3px}
+button:disabled{opacity:.5;cursor:default}
+.notice{padding:10px 14px;border-radius:8px;background:var(--warn-bg);color:var(--warn);font-size:14px}
+.demo{padding:10px 14px;border-radius:8px;background:var(--info-bg);color:var(--info);font-size:14px}
+
+/* Accesso */
+.auth{min-height:80vh;display:grid;place-items:center}
+.authcard{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px 24px;display:flex;flex-direction:column;gap:14px}
+.authcard h1{font-size:32px}
+.authcard p{margin:0;color:var(--muted);font-size:15px}
+.authcard form{display:flex;flex-direction:column;gap:12px}
+.authcard .links{display:flex;flex-wrap:wrap;gap:4px 16px}
+.msg-ok{font-size:14px;color:var(--ok);background:var(--ok-bg);padding:10px 12px;border-radius:8px}
+.msg-err{font-size:14px;color:var(--bad);background:var(--bad-bg);padding:10px 12px;border-radius:8px}
+
+.tabs{display:flex;gap:4px;padding:4px;background:var(--sunk);border-radius:12px;width:max-content;max-width:100%;overflow-x:auto}
+.tabs button{border:0;background:transparent;color:var(--muted);border-radius:9px;padding:10px 18px;white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.tabs .n{font-family:var(--f-data);font-size:12px;margin-left:6px;opacity:.75}
+
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stat{background:var(--surface);padding:14px 16px;min-width:0}
+.stat .k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.stat .v{font-family:var(--f-display);font-size:28px;line-height:1.2;font-variant-numeric:tabular-nums}
+.stat .s{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.main{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.main{grid-template-columns:minmax(0,1fr)} .main.has-detail .listcol{display:none} .main:not(.has-detail) .detailcol{display:none}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;min-width:0}
+.tools{display:flex;flex-direction:column;gap:8px;padding:12px;border-bottom:1px solid var(--line)}
+input,select,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px;min-height:44px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:80px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:13px;padding:6px 12px;min-height:36px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--sea);border-color:var(--sea);color:var(--sea-ink)}
+.chip .n{font-family:var(--f-data);margin-left:4px;opacity:.85}
+.list{list-style:none;margin:0;padding:0;max-height:72vh;overflow:auto;-webkit-overflow-scrolling:touch}
+.list li button{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:13px 14px;background:transparent}
+.list li button:hover{background:var(--sunk)}
+.list li button[aria-current="true"]{background:var(--sea-soft)}
+.names{font-family:var(--f-display);font-size:19px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meta{font-size:13px;color:var(--muted);grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:4px 12px}
+.meta .d{font-family:var(--f-data);font-size:12px}
+.pill{font-size:11px;font-weight:600;letter-spacing:.03em;padding:3px 9px;border-radius:999px;white-space:nowrap;align-self:center;display:inline-block}
+.st-nuovo{background:var(--info-bg);color:var(--info)}
+.st-appuntamento,.st-fatto,.es-programmato{background:var(--sea-soft);color:var(--sea)}
+.st-proposta,.st-contratto,.es-dasegnare{background:var(--warn-bg);color:var(--warn)}
+.st-confermato,.es-svolto{background:var(--ok-bg);color:var(--ok)}
+.st-perso,.es-annullato{background:var(--sunk);color:var(--muted)}
+.es-noshow{background:var(--bad-bg);color:var(--bad)}
+.empty{padding:28px 18px;color:var(--muted);text-align:center;font-size:14px}
+.empty strong{display:block;color:var(--ink);font-family:var(--f-display);font-weight:400;font-size:20px;margin-bottom:4px}
+
+.detailcol{display:flex;flex-direction:column;gap:18px}
+.dhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.dhead h2{font-family:var(--f-display);font-weight:400;font-size:26px;margin:0;line-height:1.15;text-wrap:balance;min-width:0;flex:1}
+.back{display:none}
+@media (max-width:900px){.back{display:inline-block}}
+form.scheda{display:flex;flex-direction:column}
+fieldset{border:0;margin:0;padding:16px 18px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px;min-width:0}
+legend{float:left;width:100%;grid-column:1 / -1;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600;padding:0;margin-bottom:2px}
+.f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.f.full{grid-column:1 / -1}
+label{font-size:13px;color:var(--muted);font-weight:500}
+.check{flex-direction:row;align-items:center;gap:10px;min-height:44px}
+.check input{width:22px;height:22px;min-height:0}
+@media (max-width:560px){fieldset{grid-template-columns:minmax(0,1fr)}}
+.hint{font-size:13px;color:var(--muted);grid-column:1 / -1;margin:0}
+.apps{grid-column:1 / -1;display:flex;flex-direction:column;gap:10px}
+.approw{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px 10px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.approw .f{grid-column:span 2}
+.approw .f.wide{grid-column:span 4}
+.approw .rm{grid-column:span 2;align-self:end}
+.approw input,.approw select{background:var(--surface)}
+@media (max-width:560px){.approw{grid-template-columns:repeat(2,minmax(0,1fr))}.approw .f,.approw .f.wide,.approw .rm{grid-column:span 2}.approw .f.half{grid-column:span 1}}
+.formbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:14px 18px}
+.formbar .l,.formbar .r{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.saved{font-size:13px;color:var(--ok)}
+.err{font-size:13px;color:var(--bad)}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--bad)}
+.hist{padding:16px 18px;display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line)}
+.hist h3{font-family:var(--f-display);font-weight:400;font-size:20px;margin:0}
+.addnote{display:flex;flex-direction:column;gap:8px}
+.addnote .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.addnote .row select{width:auto;flex:0 1 200px}
+.timeline{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--line);display:flex;flex-direction:column;gap:12px}
+.timeline li{position:relative;min-width:0}
+.timeline li::before{content:"";position:absolute;left:-20px;top:7px;width:10px;height:10px;border-radius:50%;background:var(--surface);border:2px solid var(--sea)}
+.timeline li.auto::before{border-color:var(--line)}
+.timeline .when{font-family:var(--f-data);font-size:12px;color:var(--muted)}
+.timeline .tag{font-size:11px;font-weight:600;color:var(--sea);margin-left:6px;text-transform:uppercase;letter-spacing:.06em}
+.timeline .by{font-family:var(--f-body);margin-left:6px}
+.timeline .txt{white-space:pre-wrap;overflow-wrap:anywhere}
+.timeline li.auto .txt{color:var(--muted);font-size:14px}
+.upcoming{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.upcoming h3,.sec-title{margin:0;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.upcoming ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.upcoming li{display:flex;gap:10px;align-items:baseline;font-size:14px;min-width:0}
+.upcoming .d{font-family:var(--f-data);font-size:12px;color:var(--sea);white-space:nowrap}
+.upcoming .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.placeholder{padding:40px 24px;text-align:center;color:var(--muted)}
+.placeholder strong{display:block;font-family:var(--f-display);font-weight:400;font-size:24px;color:var(--ink);margin-bottom:6px}
+
+.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:14px;border-bottom:1px solid var(--line);align-items:end}
+@media (max-width:700px){.filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.month{padding:10px 16px;background:var(--sunk);font-family:var(--f-display);font-size:18px;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.month .c{font-family:var(--f-body);font-size:13px;color:var(--muted)}
+.agrow{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:4px 14px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;padding:12px 16px;align-items:center}
+.agrow:hover{background:var(--sunk)}
+.agrow .when{font-family:var(--f-data);font-size:13px;line-height:1.3}
+.agrow .when b{display:block;font-weight:500;font-size:14px;color:var(--ink)}
+.agrow .who{min-width:0}
+.agrow .who .names{font-size:17px;display:block}
+.agrow .sub{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+@media (max-width:560px){.agrow{grid-template-columns:86px minmax(0,1fr)}.agrow .pill{grid-column:2;justify-self:start}}
+
+.stathead{display:flex;flex-wrap:wrap;gap:12px;align-items:end;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.stathead .f{width:200px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
+@media (max-width:760px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;white-space:normal;vertical-align:bottom}
+tbody tr.zero td{color:var(--muted)}
+tfoot td{font-weight:600;border-top:2px solid var(--ink);border-bottom:0}
+td.conv{font-family:var(--f-data)}
+.bar{display:inline-block;height:8px;border-radius:4px;background:var(--sea);vertical-align:middle;margin-right:8px}
+.statsec{padding:16px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)}
+.statsec:last-child{border-bottom:0}
+.note{font-size:13px;color:var(--muted);margin:0;max-width:75ch}
+.warnbox{font-size:14px;padding:10px 12px;border-radius:8px;background:var(--warn-bg);color:var(--warn)}
+
+.team td{vertical-align:middle}
+.team select{width:auto;min-width:120px}
+.addteam{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;align-items:end}
+@media (max-width:700px){.addteam{grid-template-columns:minmax(0,1fr)}}
+.linkbox{display:flex;gap:8px;flex-wrap:wrap}
+.linkbox input{flex:1 1 260px;font-family:var(--f-data);font-size:14px}
+@media (prefers-reduced-motion:no-preference){.list li button,button,.agrow{transition:background .15s,border-color .15s}}
+</style>
+</head>
+<body>
+
+<!-- Accesso -->
+<div id="auth" class="auth" hidden>
+  <div class="authcard">
+    <div>
+      <div class="eyebrow">Torre di Scopello</div>
+      <h1>Registro Sposi</h1>
+    </div>
+    <div id="auth-body"></div>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app" class="wrap" hidden>
+  <header class="top">
+    <div>
+      <div class="eyebrow">Torre di Scopello · Appuntamenti e storico</div>
+      <h1>Registro Sposi</h1>
+    </div>
+    <div class="actions">
+      <span class="whoami" id="whoami"></span>
+      <button type="button" id="btn-export">Esporta CSV</button>
+      <button type="button" class="primary" id="btn-new">+ Nuova coppia</button>
+      <button type="button" class="ghost" id="btn-logout">Esci</button>
+    </div>
+  </header>
+
+  <div id="demo" class="demo" hidden>Modalità prova: stai vedendo dati di esempio e le modifiche non vengono salvate. L'app si collega al database quando inserisci i dati di Supabase nel file <code>config.js</code>.</div>
+  <div id="notice" class="notice" hidden></div>
+
+  <section class="stats" aria-label="Riepilogo">
+    <div class="stat"><div class="k">Coppie in registro</div><div class="v" id="s-tot">0</div><div class="s">dal primo contatto in poi</div></div>
+    <div class="stat"><div class="k">In trattativa</div><div class="v" id="s-open">0</div><div class="s">esclusi firmati e non procede</div></div>
+    <div class="stat"><div class="k">Appuntamenti del mese</div><div class="v" id="s-month">0</div><div class="s" id="s-month-s">svolti e in programma</div></div>
+    <div class="stat"><div class="k">Prossimo appuntamento</div><div class="v" id="s-next">–</div><div class="s" id="s-next-s">nessuno in agenda</div></div>
+  </section>
+
+  <nav class="tabs" role="tablist" aria-label="Viste">
+    <button type="button" role="tab" data-view="coppie" id="tab-coppie">Coppie</button>
+    <button type="button" role="tab" data-view="agenda" id="tab-agenda">Agenda<span class="n" id="tab-agenda-n"></span></button>
+    <button type="button" role="tab" data-view="statistiche" id="tab-statistiche">Statistiche</button>
+    <button type="button" role="tab" data-view="squadra" id="tab-squadra" hidden>Squadra</button>
+  </nav>
+
+  <section id="view-coppie">
+    <div class="main" id="main">
+      <div class="listcol panel">
+        <div class="tools">
+          <input type="search" id="q" placeholder="Cerca per nome, paese, email…" aria-label="Cerca">
+          <div class="chips" id="chips" role="group" aria-label="Filtra per stato"></div>
+          <select id="sort" aria-label="Ordina">
+            <option value="agg">Ordina: ultime modifiche</option>
+            <option value="app">Ordina: prossimo appuntamento</option>
+            <option value="matr">Ordina: data matrimonio</option>
+            <option value="nome">Ordina: nome</option>
+          </select>
+        </div>
+        <ul class="list" id="list"></ul>
+        <div class="empty" id="list-empty"><strong>Caricamento del registro…</strong>Le coppie salvate compariranno qui.</div>
+      </div>
+      <div class="detailcol">
+        <div class="panel" id="detail"></div>
+        <div class="panel upcoming">
+          <h3>Prossimi appuntamenti</h3>
+          <ul id="upcoming"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-agenda" class="panel" hidden>
+    <div class="filters">
+      <div class="f"><label for="ag-periodo">Periodo</label>
+        <select id="ag-periodo"><option value="prossimi">Prossimi</option><option value="passati">Passati</option><option value="tutti">Tutti</option></select></div>
+      <div class="f"><label for="ag-anno">Anno</label><select id="ag-anno"></select></div>
+      <div class="f"><label for="ag-chi">Fatto da</label><select id="ag-chi"></select></div>
+      <div class="f"><label for="ag-esito">Esito</label><select id="ag-esito"></select></div>
+    </div>
+    <div id="ag-warn"></div>
+    <div id="agenda"></div>
+    <div class="formbar" id="ag-bar" hidden><span class="note" id="ag-count"></span><button type="button" id="btn-export-ag">Esporta questi appuntamenti</button></div>
+  </section>
+
+  <section id="view-statistiche" class="panel" hidden>
+    <div class="stathead">
+      <div>
+        <div class="sec-title">Appuntamenti e contratti</div>
+        <p class="note" style="margin-top:4px">Ogni coppia conta una volta sola, nel mese del suo primo appuntamento svolto. Così i mesi sommati danno esattamente il totale dell'anno.</p>
+      </div>
+      <div class="f"><label for="st-anno">Periodo</label><select id="st-anno"></select></div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div id="st-warn"></div>
+    <div class="statsec">
+      <div class="sec-title" id="st-t1">Mese per mese</div>
+      <div class="tablewrap"><table id="st-table"></table></div>
+    </div>
+    <div class="statsec">
+      <div class="sec-title">Per chi ha fatto l'appuntamento</div>
+      <p class="note">Una coppia vista da due persone diverse compare in entrambe le righe, per questo qui i totali non si sommano.</p>
+      <div class="tablewrap"><table id="st-people"></table></div>
+    </div>
+    <div class="statsec">
+      <div class="sec-title">Per canale di provenienza</div>
+      <div class="tablewrap"><table id="st-fonti"></table></div>
+    </div>
+  </section>
+
+  <section id="view-squadra" class="panel" hidden>
+    <div class="statsec">
+      <div class="sec-title">Chi può usare il registro</div>
+      <p class="note">Per far entrare una persona: aggiungi qui il suo nome e la sua email, poi mandale il link qui sotto. Al primo accesso sceglie «Primo accesso» e crea la sua password. Se una persona non lavora più con voi, togli la spunta «Attivo»: non potrà più entrare, ma i suoi appuntamenti restano nello storico.</p>
+      <div class="linkbox"><input id="app-link" readonly aria-label="Link dell'app"><button type="button" id="btn-copy">Copia link</button></div>
+    </div>
+    <div class="statsec">
+      <form id="team-form" class="addteam" novalidate>
+        <div class="f"><label for="t-nome">Nome</label><input id="t-nome" autocomplete="off" placeholder="es. Gabriele"></div>
+        <div class="f"><label for="t-email">Email</label><input id="t-email" type="email" autocomplete="off" autocapitalize="off" placeholder="nome@esempio.it"></div>
+        <div class="f"><label for="t-ruolo">Ruolo</label><select id="t-ruolo"><option value="staff">Collaboratore</option><option value="admin">Amministratore</option></select></div>
+        <button type="submit" class="primary">Aggiungi</button>
+      </form>
+      <span id="team-msg"></span>
+      <p class="note">Gli amministratori gestiscono la Squadra e possono eliminare le schede. I collaboratori fanno tutto il resto.</p>
+    </div>
+    <div class="statsec"><div class="tablewrap"><table class="team" id="team"></table></div></div>
+  </section>
+</div>
+
+<script src="config.js"></script>
+<script src="lib/supabase.js"></script>
+<script>
+(function(){
+'use strict';
+/* ============================================================
+   COSTANTI
+   ============================================================ */
+const STATI=[
+  {k:'nuovo',l:'Primo contatto'},{k:'appuntamento',l:'Appuntamento fissato'},{k:'fatto',l:'Appuntamento fatto'},
+  {k:'proposta',l:'Proposta inviata'},{k:'contratto',l:'Contratto inviato'},{k:'confermato',l:'Contratto firmato'},{k:'perso',l:'Non procede'}
+];
+const STATO_L=Object.fromEntries(STATI.map(s=>[s.k,s.l]));
+const ESITI=[{k:'programmato',l:'In programma'},{k:'svolto',l:'Svolto'},{k:'annullato',l:'Annullato o spostato'},{k:'noshow',l:'Non si sono presentati'}];
+const ESITO_L=Object.fromEntries(ESITI.map(s=>[s.k,s.l]));
+const FONTI=['Email diretta','Sito web','La Lista','Matrimonio.com','Junebug Weddings','Instagram','Meta Ads','Google Ads','Wedding planner esterna','Passaparola','Altro'];
+const TIPI_APP=['Videochiamata','Telefonata','Visita alla Torre','Incontro di persona'];
+const PACCHETTI=['Da definire','Base','Premium','Luxury'];
+const LINGUE=['Inglese','Italiano','Tedesco','Francese','Spagnolo','Altra'];
+const PAESI=['Stati Uniti','Canada','Regno Unito','Germania','Italia','Australia','Svizzera','Francia','Paesi Bassi','Irlanda','Austria','Belgio','Svezia','Norvegia','Danimarca','Emirati Arabi Uniti','India','Messico','Brasile'];
+const NOTE_TIPI=['Nota','Email','Telefonata','Videochiamata','Visita','Proposta','Contratto'];
+const MESI=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const CAMPI_COPPIA=['sposo1','sposo2','email','telefono','paese','citta','lingua','fonte','fonte_dettaglio','primo_contatto','data_matrimonio','data_flessibile','ospiti','budget','pacchetto','marina','stato','data_firma','note'];
+
+/* ============================================================
+   UTILITÀ
+   ============================================================ */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtD=iso=>{if(!iso)return '';const d=new Date(iso+'T12:00:00');return isNaN(d)?iso:d.toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'})};
+const fmtDT=iso=>{const d=new Date(iso);return isNaN(d)?'':d.toLocaleString('it-IT',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})};
+const wd=iso=>{const d=new Date(iso+'T12:00:00');return isNaN(d)?'':d.toLocaleDateString('it-IT',{weekday:'short',day:'numeric'})};
+const coppia=r=>[r.sposo1,r.sposo2].filter(Boolean).join(' & ')||'Senza nome';
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const pct=(a,b)=>b?Math.round(a/b*100)+'%':'–';
+const lsGet=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const appStr=a=>a&&a.data?(fmtD(a.data)+(a.ora?' ore '+a.ora:'')+(a.tipo?', '+a.tipo:'')+(a.chi_nome?' con '+a.chi_nome:'')):'';
+const isDaSegnare=a=>a.esito==='programmato'&&a.data&&a.data<today();
+const opt=(arr,val)=>arr.map(o=>`<option${o===val?' selected':''}>${esc(o)}</option>`).join('');
+const appUrl=()=>location.origin+location.pathname.replace(/index\.html$/,'');
+
+/* ============================================================
+   DATI: SUPABASE O MODALITÀ PROVA
+   ============================================================ */
+const CFG=window.REGISTRO_CONFIG||{};
+const DEMO=!CFG.SUPABASE_URL||!CFG.SUPABASE_ANON_KEY||!window.supabase;
+
+function realApi(){
+  const sb=window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  const chk=({data,error})=>{if(error)throw error;return data};
+  return {
+    demo:false,
+    async session(){const {data}=await sb.auth.getSession();return data.session},
+    onAuth(cb){sb.auth.onAuthStateChange((ev,s)=>cb(ev,s))},
+    async signIn(e,p){chk(await sb.auth.signInWithPassword({email:e,password:p}))},
+    async signUp(e,p){return chk(await sb.auth.signUp({email:e,password:p,options:{emailRedirectTo:appUrl()}}))},
+    async reset(e){chk(await sb.auth.resetPasswordForEmail(e,{redirectTo:appUrl()}))},
+    async setPassword(p){chk(await sb.auth.updateUser({password:p}))},
+    async signOut(){await sb.auth.signOut()},
+    async me(email){return chk(await sb.from('staff').select('*').eq('email',email.toLowerCase()).maybeSingle())},
+    async loadAll(){
+      const [c,a,s]=await Promise.all([sb.from('coppie').select('*').limit(5000),sb.from('appuntamenti').select('*').limit(20000),sb.from('staff').select('*').order('nome')]);
+      return {coppie:chk(c),appuntamenti:chk(a),staff:chk(s)};
+    },
+    async insertCoppia(f){return chk(await sb.from('coppie').insert(f).select().single())},
+    async updateCoppia(id,f){return chk(await sb.from('coppie').update(f).eq('id',id).select().single())},
+    async deleteCoppia(id){const d=chk(await sb.from('coppie').delete().eq('id',id).select('id'));if(!d.length)throw {code:'forbidden'}},
+    async insertApps(list){if(list.length)chk(await sb.from('appuntamenti').insert(list))},
+    async updateApp(id,f){chk(await sb.from('appuntamenti').update(f).eq('id',id))},
+    async deleteApps(ids){if(ids.length)chk(await sb.from('appuntamenti').delete().in('id',ids))},
+    async eventi(cid){return chk(await sb.from('eventi').select('*').eq('coppia_id',cid).order('creato_il',{ascending:false}))},
+    async addEventi(list){if(list.length)chk(await sb.from('eventi').insert(list))},
+    async upsertStaff(row){chk(await sb.from('staff').upsert(row))},
+    async updateStaff(email,patch){const d=chk(await sb.from('staff').update(patch).eq('email',email).select('email'));if(!d.length)throw {code:'forbidden'}}
+  };
+}
+function demoApi(){
+  const uid=()=>'d'+Math.random().toString(36).slice(2,10);
+  const now=()=>new Date().toISOString();
+  const y=new Date().getFullYear();
+  const m=(mm,dd,yy=y)=>yy+'-'+String(mm).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
+  const staff=[{email:'pierluigi@esempio.it',nome:'Pierluigi',ruolo:'admin',attivo:true},{email:'marina@esempio.it',nome:'Marina Guccione',ruolo:'staff',attivo:true},{email:'gabriele@esempio.it',nome:'Gabriele',ruolo:'staff',attivo:true}];
+  const c=(o)=>Object.assign({id:uid(),marina:false,lingua:'Inglese',pacchetto:'Da definire',creato_il:now(),aggiornato_il:now()},o);
+  const coppie=[
+    c({sposo1:'Emma',sposo2:'James',paese:'Stati Uniti',citta:'Boston',fonte:'La Lista',stato:'confermato',data_firma:m(3,10),data_matrimonio:m(9,18,y+1),ospiti:'60-70',pacchetto:'Premium',marina:true,note:'Esempio. Sognano la cerimonia al tramonto.'}),
+    c({sposo1:'Sophie',sposo2:'Lukas',paese:'Germania',citta:'Monaco',fonte:'Instagram',stato:'perso',ospiti:'40',note:'Esempio.'}),
+    c({sposo1:'Olivia',sposo2:'Noah',paese:'Canada',citta:'Toronto',fonte:'La Lista',stato:'proposta',data_flessibile:'giugno '+(y+1),ospiti:'80-90',pacchetto:'Luxury',note:'Esempio.'}),
+    c({sposo1:'Charlotte',sposo2:'Harry',paese:'Regno Unito',citta:'Londra',fonte:'Matrimonio.com',stato:'appuntamento',ospiti:'50',note:'Esempio.'})
+  ];
+  const a=(ci,o)=>Object.assign({id:uid(),coppia_id:coppie[ci].id,ora:'17:00',tipo:'Videochiamata',esito:'svolto',nota:''},o);
+  const appuntamenti=[
+    a(0,{data:m(1,15),chi_nome:'Pierluigi'}),a(0,{data:m(2,20),chi_nome:'Marina Guccione',tipo:'Visita alla Torre'}),
+    a(1,{data:m(1,20),chi_nome:'Gabriele'}),
+    a(2,{data:m(2,5),chi_nome:'Marina Guccione'}),a(2,{data:m(2,6),chi_nome:'Pierluigi',esito:'annullato'}),
+    a(3,{data:(()=>{const d=new Date();d.setDate(d.getDate()+3);return d.toISOString().slice(0,10)})(),chi_nome:'Gabriele',esito:'programmato'})
+  ];
+  const eventi=[{id:uid(),coppia_id:coppie[0].id,creato_il:now(),tipo:'Nota',testo:'Scheda di esempio.',automatico:false,autore_nome:'Pierluigi'}];
+  const clone=x=>JSON.parse(JSON.stringify(x));
+  return {
+    demo:true,
+    async session(){return {user:{email:'pierluigi@esempio.it'}}},
+    onAuth(){},async signIn(){},async signUp(){},async reset(){},async setPassword(){},async signOut(){},
+    async me(){return staff[0]},
+    async loadAll(){return clone({coppie,appuntamenti,staff})},
+    async insertCoppia(f){const r=c(f);coppie.push(r);return clone(r)},
+    async updateCoppia(id,f){const r=coppie.find(x=>x.id===id);Object.assign(r,f,{aggiornato_il:now()});return clone(r)},
+    async deleteCoppia(id){const i=coppie.findIndex(x=>x.id===id);if(i>=0)coppie.splice(i,1);for(let i2=appuntamenti.length-1;i2>=0;i2--)if(appuntamenti[i2].coppia_id===id)appuntamenti.splice(i2,1)},
+    async insertApps(list){list.forEach(x=>appuntamenti.push(Object.assign({id:uid()},x)))},
+    async updateApp(id,f){Object.assign(appuntamenti.find(x=>x.id===id),f)},
+    async deleteApps(ids){ids.forEach(id=>{const i=appuntamenti.findIndex(x=>x.id===id);if(i>=0)appuntamenti.splice(i,1)})},
+    async eventi(cid){return clone(eventi.filter(e=>e.coppia_id===cid).sort((p,q)=>q.creato_il.localeCompare(p.creato_il)))},
+    async addEventi(list){list.forEach(x=>eventi.push(Object.assign({id:uid(),creato_il:now()},x)))},
+    async upsertStaff(row){const i=staff.findIndex(s=>s.email===row.email);if(i>=0)Object.assign(staff[i],row);else staff.push(Object.assign({attivo:true},row))},
+    async updateStaff(email,patch){Object.assign(staff.find(s=>s.email===email),patch)}
+  };
+}
+const api=DEMO?demoApi():realApi();
+
+/* ============================================================
+   STATO
+   ============================================================ */
+let me=null, rows=[], appsAll=[], appsBy={}, staff=[], loaded=false;
+let selId=null, mode=null, filt='tutti', q='', sortBy='agg', busy=false, view='coppie', dirty=false, eventiCache={};
+
+function setData(d){
+  rows=d.coppie||[];
+  appsAll=(d.appuntamenti||[]).map(a=>Object.assign({},a,{ora:a.ora?String(a.ora).slice(0,5):''}));
+  appsBy={};appsAll.forEach(a=>{(appsBy[a.coppia_id]=appsBy[a.coppia_id]||[]).push(a)});
+  staff=d.staff||[];
+  loaded=true;
+}
+const apps=r=>appsBy[r.id]||[];
+const allApps=()=>{const byId=Object.fromEntries(rows.map(r=>[r.id,r]));return appsAll.filter(a=>a.data&&byId[a.coppia_id]).map(a=>({r:byId[a.coppia_id],a}))};
+function nextApp(r){const t=today();return apps(r).filter(a=>a.esito==='programmato'&&a.data>=t).sort((x,y)=>(x.data+(x.ora||'')).localeCompare(y.data+(y.ora||'')))[0]}
+function persone(){const s=[];staff.filter(p=>p.attivo).forEach(p=>{if(!s.includes(p.nome))s.push(p.nome)});appsAll.forEach(a=>{if(a.chi_nome&&!s.includes(a.chi_nome))s.push(a.chi_nome)});return s}
+function anni(){const s=new Set([String(new Date().getFullYear())]);appsAll.forEach(a=>{if(a.data)s.add(a.data.slice(0,4))});rows.forEach(r=>{if(r.data_firma)s.add(r.data_firma.slice(0,4))});return [...s].sort().reverse()}
+const isAdmin=()=>me&&me.ruolo==='admin';
+
+function notice(msg){const n=$('notice');n.textContent=msg||'';n.hidden=!msg}
+function errText(e){
+  const m=String((e&&(e.message||e.error_description))||'');
+  if(e&&e.code==='forbidden')return 'Questa operazione è riservata agli amministratori.';
+  if(/JWT|session|token/i.test(m))return 'La sessione è scaduta: esci e rientra.';
+  if(/Failed to fetch|NetworkError|network/i.test(m))return 'Nessuna connessione. Controlla internet e riprova.';
+  if(/row-level security|permission/i.test(m))return 'Non hai i permessi per questa operazione.';
+  if(/duplicate key/i.test(m))return 'Esiste già.';
+  return 'Operazione non riuscita, riprova tra poco.';
+}
+async function reload(){
+  try{setData(await api.loadAll());notice('')}
+  catch(e){notice('Non riesco a caricare il registro. '+errText(e))}
+  renderList();renderStats();renderAgenda();renderStatistiche();renderSquadra();
+  if(!dirty&&mode==='edit'){if(!rows.find(x=>x.id===selId)){mode=null;selId=null}renderDetail()}
+  else if(!mode)renderDetail();
+}
+
+/* ============================================================
+   ACCESSO
+   ============================================================ */
+let authMode='entra', authMsg='';
+function showAuth(m,msg){authMode=m;authMsg=msg||'';$('app').hidden=true;$('auth').hidden=false;renderAuth()}
+function renderAuth(){
+  const b=$('auth-body');
+  const msg=authMsg?`<div class="${authMsg.startsWith('!')?'msg-err':'msg-ok'}">${esc(authMsg.replace(/^!/,''))}</div>`:'';
+  const email=esc(lsGet('rs-email'));
+  if(authMode==='entra')b.innerHTML=`<p>Entra con la tua email e la tua password.</p>${msg}
+    <form id="f-auth" novalidate><div class="f"><label for="a-email">Email</label><input id="a-email" type="email" autocomplete="username" autocapitalize="off" value="${email}"></div>
+    <div class="f"><label for="a-pw">Password</label><input id="a-pw" type="password" autocomplete="current-password"></div>
+    <button type="submit" class="primary">Entra</button></form>
+    <div class="links"><button type="button" class="link" data-auth="primo">Primo accesso</button><button type="button" class="link" data-auth="dimenticata">Password dimenticata?</button></div>`;
+  else if(authMode==='primo')b.innerHTML=`<p>Usa l'email che l'amministratore ha inserito nella Squadra e scegli una password di almeno 8 caratteri.</p>${msg}
+    <form id="f-auth" novalidate><div class="f"><label for="a-email">Email</label><input id="a-email" type="email" autocomplete="username" autocapitalize="off" value="${email}"></div>
+    <div class="f"><label for="a-pw">Nuova password</label><input id="a-pw" type="password" autocomplete="new-password" minlength="8"></div>
+    <button type="submit" class="primary">Crea il mio accesso</button></form>
+    <div class="links"><button type="button" class="link" data-auth="entra">Ho già un accesso</button></div>`;
+  else if(authMode==='dimenticata')b.innerHTML=`<p>Ti mandiamo un'email con il link per scegliere una nuova password.</p>${msg}
+    <form id="f-auth" novalidate><div class="f"><label for="a-email">Email</label><input id="a-email" type="email" autocomplete="username" autocapitalize="off" value="${email}"></div>
+    <button type="submit" class="primary">Invia il link</button></form>
+    <div class="links"><button type="button" class="link" data-auth="entra">Torna all'accesso</button></div>`;
+  else if(authMode==='nuovapw')b.innerHTML=`<p>Scegli la tua nuova password, di almeno 8 caratteri.</p>${msg}
+    <form id="f-auth" novalidate><div class="f"><label for="a-pw">Nuova password</label><input id="a-pw" type="password" autocomplete="new-password" minlength="8"></div>
+    <button type="submit" class="primary">Salva la password</button></form>`;
+  else if(authMode==='negato')b.innerHTML=`${msg||'<div class="msg-err">Il tuo account non è attivo nella Squadra. Chiedi a chi gestisce il registro di aggiungerti o di riattivarti.</div>'}
+    <button type="button" data-auth="esci">Esci</button>`;
+}
+async function submitAuth(){
+  const e=($('a-email')||{}).value, p=($('a-pw')||{}).value;
+  const email=(e||'').trim().toLowerCase();
+  if(email)lsSet('rs-email',email);
+  const btn=document.querySelector('#f-auth button[type=submit]');if(btn)btn.disabled=true;
+  try{
+    if(authMode==='entra'){
+      if(!email||!p){authMsg='!Inserisci email e password.';return renderAuth()}
+      await api.signIn(email,p);await afterLogin();
+    }else if(authMode==='primo'){
+      if(!email||!p||p.length<8){authMsg='!Inserisci l\'email e una password di almeno 8 caratteri.';return renderAuth()}
+      const d=await api.signUp(email,p);
+      if(d&&d.session){await afterLogin();return}
+      showAuth('entra','Ti abbiamo mandato un\'email: apri il link per confermare l\'indirizzo, poi entra con la tua password. Se avevi già un accesso, entra direttamente.');
+    }else if(authMode==='dimenticata'){
+      if(!email){authMsg='!Inserisci la tua email.';return renderAuth()}
+      await api.reset(email);showAuth('entra','Se l\'email è registrata, ti è arrivato un messaggio con il link per la nuova password.');
+    }else if(authMode==='nuovapw'){
+      if(!p||p.length<8){authMsg='!La password deve avere almeno 8 caratteri.';return renderAuth()}
+      await api.setPassword(p);try{history.replaceState(null,'',location.pathname)}catch(x){}
+      await afterLogin();
+    }
+  }catch(err){
+    const m=String(err&&err.message||'');
+    if(/Invalid login/i.test(m))authMsg='!Email o password non corrette.';
+    else if(/Email not confirmed/i.test(m))authMsg='!Devi prima confermare l\'email: apri il link che ti abbiamo mandato.';
+    else if(/Database error|not authori|non è autorizzata/i.test(m))authMsg='!Questa email non è nella Squadra. Chiedi all\'amministratore di aggiungerti, poi riprova.';
+    else if(/rate limit|security purposes/i.test(m))authMsg='!Troppi tentativi ravvicinati. Aspetta qualche minuto e riprova.';
+    else if(/Password should|weak/i.test(m))authMsg='!Password troppo debole: usa almeno 8 caratteri, con lettere e numeri.';
+    else authMsg='!'+errText(err);
+    renderAuth();
+  }finally{if(btn)btn.disabled=false}
+}
+async function afterLogin(){
+  const s=await api.session();
+  if(!s){showAuth('entra');return}
+  let row=null;try{row=await api.me(s.user.email)}catch(e){}
+  if(!row||!row.attivo){showAuth('negato');return}
+  me=row;showApp();await reload();
+}
+function showApp(){
+  $('auth').hidden=true;$('app').hidden=false;
+  $('whoami').innerHTML='Ciao <b>'+esc(me.nome)+'</b>';
+  $('demo').hidden=!api.demo;$('btn-logout').hidden=api.demo;
+  $('tab-squadra').hidden=!isAdmin();
+  setView(location.hash.slice(1)||'coppie',false);
+  renderAll();
+}
+
+/* ============================================================
+   NAVIGAZIONE
+   ============================================================ */
+const VIEWS=['coppie','agenda','statistiche','squadra'];
+function setView(v,push){
+  if(!VIEWS.includes(v)||(v==='squadra'&&!isAdmin()))v='coppie';
+  view=v;
+  VIEWS.forEach(k=>{$('view-'+k).hidden=k!==v;$('tab-'+k).setAttribute('aria-selected',k===v)});
+  if(push&&location.hash!=='#'+v){try{history.replaceState(null,'','#'+v)}catch(e){location.hash=v}}
+  renderAgenda();renderStatistiche();renderSquadra();
+}
+window.addEventListener('hashchange',()=>{if(me)setView(location.hash.slice(1),false)});
+
+/* ============================================================
+   COPPIE
+   ============================================================ */
+function renderChips(){
+  const counts={tutti:rows.length};STATI.forEach(s=>counts[s.k]=0);rows.forEach(r=>{if(counts[r.stato]!=null)counts[r.stato]++});
+  $('chips').innerHTML=[{k:'tutti',l:'Tutti'}].concat(STATI).map(s=>`<button type="button" class="chip" data-k="${s.k}" aria-pressed="${filt===s.k}">${esc(s.l)}<span class="n">${counts[s.k]||0}</span></button>`).join('');
+}
+function visible(){
+  const t=q.trim().toLowerCase();
+  const v=rows.filter(r=>(filt==='tutti'||r.stato===filt)&&(!t||[r.sposo1,r.sposo2,r.paese,r.citta,r.email,r.telefono,r.fonte,r.note,apps(r).map(a=>a.chi_nome).join(' ')].join(' ').toLowerCase().includes(t)));
+  const nk=r=>{const n=nextApp(r);return n?n.data+(n.ora||''):'9999'};
+  const by={agg:(a,b)=>(b.aggiornato_il||'').localeCompare(a.aggiornato_il||''),app:(a,b)=>nk(a).localeCompare(nk(b)),
+    matr:(a,b)=>(a.data_matrimonio||'9999').localeCompare(b.data_matrimonio||'9999'),nome:(a,b)=>coppia(a).localeCompare(coppia(b),'it')};
+  return v.sort(by[sortBy]);
+}
+function renderList(){
+  renderChips();
+  const v=visible();
+  $('list').innerHTML=v.map(r=>{
+    const wdt=r.data_matrimonio?fmtD(r.data_matrimonio):(r.data_flessibile||'data da definire');
+    const n=nextApp(r);
+    return `<li><button type="button" data-id="${esc(r.id)}" aria-current="${r.id===selId}">
+      <span class="names">${esc(coppia(r))}</span>
+      <span class="pill st-${esc(r.stato)}">${esc(STATO_L[r.stato]||r.stato)}</span>
+      <span class="meta"><span>${esc([r.citta,r.paese].filter(Boolean).join(', ')||'Provenienza n.d.')}</span><span class="d">♥ ${esc(wdt)}</span>${r.ospiti?`<span>${esc(r.ospiti)} ospiti</span>`:''}${r.fonte?`<span>via ${esc(r.fonte)}</span>`:''}${n?`<span class="d">📅 ${esc(fmtD(n.data))}${n.ora?' '+esc(n.ora):''}</span>`:''}</span>
+    </button></li>`}).join('');
+  const e=$('list-empty');
+  if(!loaded){e.hidden=false;return}
+  if(!rows.length){e.hidden=false;e.innerHTML='<strong>Il registro è vuoto</strong>Dopo il primo scambio di email, premi «Nuova coppia» e annota nomi, provenienza, canale e data che sognano.'}
+  else if(!v.length){e.hidden=false;e.innerHTML='<strong>Nessun risultato</strong>Prova a cambiare filtro o ricerca.'}
+  else e.hidden=true;
+}
+function renderStats(){
+  $('s-tot').textContent=rows.length;
+  $('s-open').textContent=rows.filter(r=>r.stato!=='confermato'&&r.stato!=='perso').length;
+  const t=today(), mth=t.slice(0,7), all=allApps();
+  const mese=all.filter(x=>x.a.data.slice(0,7)===mth&&(x.a.esito==='svolto'||x.a.esito==='programmato'));
+  $('s-month').textContent=mese.length;
+  $('s-month-s').textContent=MESI[+mth.slice(5)-1]+': '+mese.filter(x=>x.a.esito==='svolto').length+' svolti, '+mese.filter(x=>x.a.esito==='programmato').length+' in programma';
+  const up=all.filter(x=>x.a.esito==='programmato'&&x.a.data>=t&&x.r.stato!=='perso').sort((x,y)=>(x.a.data+(x.a.ora||'')).localeCompare(y.a.data+(y.a.ora||'')));
+  if(up.length){
+    const a=up[0].a;const d=new Date(a.data+'T12:00:00');
+    $('s-next').textContent=d.toLocaleDateString('it-IT',{day:'numeric',month:'short'})+(a.ora?' · '+a.ora:'');
+    $('s-next-s').textContent=coppia(up[0].r)+(a.chi_nome?', con '+a.chi_nome:'');
+  }else{$('s-next').textContent='–';$('s-next-s').textContent='nessuno in agenda'}
+  $('upcoming').innerHTML=up.length?up.slice(0,6).map(x=>`<li><span class="d">${esc(fmtD(x.a.data))}${x.a.ora?' '+esc(x.a.ora):''}</span><span class="n">${esc(coppia(x.r))}${x.a.tipo?' · '+esc(x.a.tipo):''}${x.a.chi_nome?' · '+esc(x.a.chi_nome):''}</span></li>`).join(''):'<li style="color:var(--muted)">Nessun appuntamento in arrivo.</li>';
+  $('tab-agenda-n').textContent=up.length?String(up.length):'';
+}
+function chiOptions(val){
+  const list=persone();if(val&&!list.includes(val))list.push(val);
+  return '<option value="">Seleziona…</option>'+list.map(p=>`<option${p===val?' selected':''}>${esc(p)}</option>`).join('');
+}
+function appRowHtml(a){
+  const id=esc(a.id);
+  return `<div class="approw" data-aid="${id}">
+    <div class="f half"><label for="ap-data-${id}">Data</label><input type="date" id="ap-data-${id}" data-k="data" value="${esc(a.data)}"></div>
+    <div class="f half"><label for="ap-ora-${id}">Ora</label><input type="time" id="ap-ora-${id}" data-k="ora" value="${esc(a.ora)}"></div>
+    <div class="f"><label for="ap-tipo-${id}">Tipo</label><select id="ap-tipo-${id}" data-k="tipo"><option value="">Seleziona…</option>${opt(TIPI_APP,a.tipo)}</select></div>
+    <div class="f"><label for="ap-chi-${id}">Fatto da</label><select id="ap-chi-${id}" data-k="chi_nome">${chiOptions(a.chi_nome)}</select></div>
+    <div class="f"><label for="ap-esito-${id}">Esito</label><select id="ap-esito-${id}" data-k="esito">${ESITI.map(e=>`<option value="${e.k}"${e.k===(a.esito||'programmato')?' selected':''}>${esc(e.l)}</option>`).join('')}</select></div>
+    <div class="f wide"><label for="ap-nota-${id}">Nota breve</label><input id="ap-nota-${id}" data-k="nota" value="${esc(a.nota)}" placeholder="es. presenti anche i genitori di lei" autocomplete="off"></div>
+    <button type="button" class="ghost rm" data-rm="${id}">Rimuovi</button>
+  </div>`;
+}
+function renderDetail(){
+  dirty=false;
+  const box=$('detail');
+  $('main').classList.toggle('has-detail',!!mode);
+  if(!mode){box.innerHTML='<div class="placeholder"><strong>Scegli una coppia</strong>oppure premi «Nuova coppia» per aprire una scheda dopo il primo scambio di email.</div>';return}
+  const r=mode==='new'?{stato:'nuovo',pacchetto:'Da definire',lingua:'Inglese'}:rows.find(x=>x.id===selId);
+  if(!r){mode=null;renderDetail();return}
+  const list=(mode==='new'?[]:apps(r)).slice().sort((x,y)=>(x.data+(x.ora||'')).localeCompare(y.data+(y.ora||'')));
+  box.innerHTML=`
+  <div class="dhead">
+    <button type="button" class="back" id="btn-back">← Elenco</button>
+    <h2>${mode==='new'?'Nuova coppia':esc(coppia(r))}</h2>
+    ${mode==='edit'?`<span class="pill st-${esc(r.stato)}">${esc(STATO_L[r.stato]||'')}</span>`:''}
+  </div>
+  <form id="form" class="scheda" novalidate>
+    <fieldset><legend>Gli sposi</legend>
+      <div class="f"><label for="f-sposo1">Nome sposo/a</label><input id="f-sposo1" value="${esc(r.sposo1)}" autocomplete="off"></div>
+      <div class="f"><label for="f-sposo2">Nome sposo/a</label><input id="f-sposo2" value="${esc(r.sposo2)}" autocomplete="off"></div>
+      <div class="f"><label for="f-email">Email</label><input id="f-email" type="email" value="${esc(r.email)}" autocomplete="off" autocapitalize="off"></div>
+      <div class="f"><label for="f-telefono">Telefono / WhatsApp</label><input id="f-telefono" type="tel" value="${esc(r.telefono)}" autocomplete="off"></div>
+      <div class="f"><label for="f-paese">Paese di provenienza</label><input id="f-paese" list="dl-paesi" value="${esc(r.paese)}" autocomplete="off"></div>
+      <div class="f"><label for="f-citta">Città</label><input id="f-citta" value="${esc(r.citta)}" autocomplete="off"></div>
+      <div class="f"><label for="f-lingua">Lingua</label><select id="f-lingua">${opt(LINGUE,r.lingua)}</select></div>
+    </fieldset>
+    <fieldset><legend>Come ci hanno trovato</legend>
+      <div class="f"><label for="f-fonte">Canale</label><select id="f-fonte"><option value="">Seleziona…</option>${opt(FONTI,r.fonte)}</select></div>
+      <div class="f"><label for="f-fonte_dettaglio">Dettaglio (chi, quale annuncio…)</label><input id="f-fonte_dettaglio" value="${esc(r.fonte_dettaglio)}" autocomplete="off"></div>
+      <div class="f"><label for="f-primo_contatto">Data primo contatto</label><input id="f-primo_contatto" type="date" value="${esc(r.primo_contatto||(mode==='new'?today():''))}"></div>
+    </fieldset>
+    <fieldset><legend>Il loro giorno</legend>
+      <div class="f"><label for="f-data_matrimonio">Data desiderata</label><input id="f-data_matrimonio" type="date" value="${esc(r.data_matrimonio)}"></div>
+      <div class="f"><label for="f-data_flessibile">Se non è precisa / alternative</label><input id="f-data_flessibile" value="${esc(r.data_flessibile)}" placeholder="es. fine settembre 2027" autocomplete="off"></div>
+      <div class="f"><label for="f-ospiti">Ospiti stimati</label><input id="f-ospiti" value="${esc(r.ospiti)}" placeholder="es. 60-70" autocomplete="off"></div>
+      <div class="f"><label for="f-budget">Budget indicato</label><input id="f-budget" value="${esc(r.budget)}" placeholder="es. 80.000 €" autocomplete="off"></div>
+      <div class="f"><label for="f-pacchetto">Pacchetto di interesse</label><select id="f-pacchetto">${opt(PACCHETTI,r.pacchetto)}</select></div>
+      <div class="f check" style="align-self:end"><input type="checkbox" id="f-marina"${r.marina?' checked':''}><label for="f-marina">Coinvolta Marina Guccione</label></div>
+    </fieldset>
+    <fieldset><legend>Appuntamenti</legend>
+      <div class="apps" id="apps">${list.map(appRowHtml).join('')}</div>
+      <div class="f full"><button type="button" id="btn-addapp">+ Aggiungi appuntamento</button></div>
+      <p class="hint">Dopo ogni incontro imposta l'esito su «Svolto»: le statistiche contano solo gli appuntamenti svolti.</p>
+    </fieldset>
+    <fieldset><legend>Stato della trattativa</legend>
+      <div class="f"><label for="f-stato">Stato</label><select id="f-stato">${STATI.map(s=>`<option value="${s.k}"${s.k===r.stato?' selected':''}>${esc(s.l)}</option>`).join('')}</select></div>
+      <div class="f"><label for="f-data_firma">Data firma contratto</label><input id="f-data_firma" type="date" value="${esc(r.data_firma)}"></div>
+      <div class="f full"><label for="f-note">Note sulla coppia (visione, desideri, dettagli)</label><textarea id="f-note" rows="3">${esc(r.note)}</textarea></div>
+    </fieldset>
+    <div class="formbar">
+      <div class="l">${mode==='edit'&&isAdmin()?'<span id="del-zone"><button type="button" class="danger" id="btn-del">Elimina scheda</button></span>':''}</div>
+      <div class="r"><span id="form-msg"></span>${mode==='new'?'<button type="button" id="btn-cancel">Annulla</button>':''}<button type="submit" class="primary" id="btn-save">${mode==='new'?'Crea scheda':'Salva modifiche'}</button></div>
+    </div>
+  </form>
+  ${mode==='edit'?'<div class="hist" id="hist"></div>':''}
+  <datalist id="dl-paesi">${PAESI.map(p=>`<option value="${esc(p)}">`).join('')}</datalist>`;
+  if(mode==='edit')loadHist(r.id);
+}
+function renderHist(cid,list){
+  const h=$('hist');if(!h||selId!==cid)return;
+  const keep=$('n-testo')?$('n-testo').value:'';
+  h.innerHTML=`<h3>Storia</h3>
+    <div class="addnote">
+      <label for="n-testo">Aggiungi un passaggio (cosa vi siete detti, cosa avete inviato)</label>
+      <textarea id="n-testo" rows="2" placeholder="es. Call con entrambi, amano il tramonto sui faraglioni. Inviare spending plan entro venerdì."></textarea>
+      <div class="row"><select id="n-tipo" aria-label="Tipo di passaggio">${opt(NOTE_TIPI,'Nota')}</select><button type="button" id="btn-note">Aggiungi alla storia</button><span id="note-msg"></span></div>
+    </div>
+    ${list==null?'<p style="color:var(--muted);margin:0">Caricamento…</p>':list.length?`<ol class="timeline">${list.map(e=>`<li class="${e.automatico?'auto':''}"><div class="when">${esc(fmtDT(e.creato_il))}${e.tipo&&!e.automatico?`<span class="tag">${esc(e.tipo)}</span>`:''}${e.autore_nome?`<span class="by">· ${esc(e.autore_nome)}</span>`:''}</div><div class="txt">${esc(e.testo)}</div></li>`).join('')}</ol>`:'<p style="color:var(--muted);margin:0">Ancora nessun passaggio registrato.</p>'}`;
+  if(keep)$('n-testo').value=keep;
+}
+async function loadHist(cid){
+  renderHist(cid,eventiCache[cid]||null);
+  try{eventiCache[cid]=await api.eventi(cid);renderHist(cid,eventiCache[cid])}
+  catch(e){const h=$('hist');if(h&&selId===cid)h.innerHTML='<h3>Storia</h3><p class="err">'+esc(errText(e))+'</p>'}
+}
+function readApps(){
+  return [...document.querySelectorAll('#apps .approw')].map(row=>{
+    const a={id:row.dataset.aid};
+    row.querySelectorAll('[data-k]').forEach(el=>a[el.dataset.k]=el.value.trim());
+    return a;
+  }).filter(a=>a.data||a.tipo||a.nota);
+}
+function readForm(){
+  const f={};
+  CAMPI_COPPIA.forEach(k=>{const el=$('f-'+k);if(!el)return;f[k]=el.type==='checkbox'?el.checked:el.value.trim()});
+  ['primo_contatto','data_matrimonio','data_firma'].forEach(k=>{if(!f[k])f[k]=null});
+  return f;
+}
+const setMsg=(id,txt,cls)=>{const m=$(id);if(m){m.className=cls||'';m.textContent=txt}};
+const ev=(cid,testo,extra)=>Object.assign({coppia_id:cid,testo,automatico:true,autore_nome:me.nome},extra||{});
+const appFields=a=>({data:a.data,ora:a.ora||null,tipo:a.tipo||null,chi_nome:a.chi_nome||null,esito:a.esito||'programmato',nota:a.nota||null});
+
+async function save(){
+  if(busy)return;
+  const f=readForm(), list=readApps();
+  if(!f.sposo1&&!f.sposo2){setMsg('form-msg','Inserisci almeno un nome.','err');$('f-sposo1').focus();return}
+  const senzaData=list.find(a=>!a.data);
+  if(senzaData){setMsg('form-msg','Ogni appuntamento ha bisogno di una data.','err');const el=$('ap-data-'+senzaData.id);if(el)el.focus();return}
+  const senzaChi=list.find(a=>a.esito==='svolto'&&!a.chi_nome);
+  if(senzaChi){setMsg('form-msg','Indica chi ha fatto l\'appuntamento svolto.','err');const el=$('ap-chi-'+senzaChi.id);if(el)el.focus();return}
+  if(f.stato==='confermato'&&!f.data_firma)f.data_firma=today();
+  busy=true;$('btn-save').disabled=true;setMsg('form-msg','Salvataggio…');
+  try{
+    let cid, eventi=[];
+    if(mode==='new'){
+      const row=await api.insertCoppia(f);cid=row.id;
+      eventi.push(ev(cid,'Scheda creata · stato: '+STATO_L[f.stato]));
+      await api.insertApps(list.map(a=>Object.assign({coppia_id:cid},appFields(a))));
+      list.forEach(a=>eventi.push(ev(cid,'Appuntamento aggiunto: '+appStr(a)+' ('+ESITO_L[a.esito]+')')));
+    }else{
+      cid=selId;const old=rows.find(x=>x.id===cid);const oldApps=apps(old);
+      await api.updateCoppia(cid,f);
+      if(old.stato!==f.stato)eventi.push(ev(cid,'Stato: '+(STATO_L[old.stato]||'–')+' → '+STATO_L[f.stato]));
+      const om=Object.fromEntries(oldApps.map(a=>[a.id,a]));
+      const nuovi=list.filter(a=>!om[a.id]);
+      await api.insertApps(nuovi.map(a=>Object.assign({coppia_id:cid},appFields(a))));
+      nuovi.forEach(a=>eventi.push(ev(cid,'Appuntamento aggiunto: '+appStr(a)+' ('+ESITO_L[a.esito]+')')));
+      for(const a of list.filter(x=>om[x.id])){
+        const o=om[a.id];const nf=appFields(a);
+        const changed=['data','ora','tipo','chi_nome','nota'].some(k=>(o[k]||'')!==(nf[k]||''));
+        const esitoCh=(o.esito||'programmato')!==nf.esito;
+        if(changed||esitoCh)await api.updateApp(a.id,nf);
+        if(['data','ora','tipo','chi_nome'].some(k=>(o[k]||'')!==(nf[k]||'')))eventi.push(ev(cid,'Appuntamento modificato: '+appStr(a)));
+        if(esitoCh)eventi.push(ev(cid,'Appuntamento del '+fmtD(a.data)+': '+ESITO_L[nf.esito]+(a.chi_nome?' (con '+a.chi_nome+')':'')));
+      }
+      const tolti=oldApps.filter(o=>!list.find(a=>a.id===o.id));
+      await api.deleteApps(tolti.map(o=>o.id));
+      tolti.forEach(o=>eventi.push(ev(cid,'Appuntamento rimosso: '+appStr(o))));
+    }
+    await api.addEventi(eventi);
+    delete eventiCache[cid];
+    selId=cid;mode='edit';dirty=false;
+    await reload();
+    setMsg('form-msg',eventi.length&&eventi[0].testo.startsWith('Scheda creata')?'Scheda creata.':'Modifiche salvate.','saved');
+  }catch(e){setMsg('form-msg',errText(e),'err')}
+  finally{busy=false;const b=$('btn-save');if(b)b.disabled=false}
+}
+async function addNote(){
+  if(busy)return;
+  const t=$('n-testo').value.trim();if(!t){setMsg('note-msg','Scrivi prima il testo.','err');return}
+  busy=true;$('btn-note').disabled=true;const cid=selId;
+  try{
+    await api.addEventi([{coppia_id:cid,testo:t,tipo:$('n-tipo').value,automatico:false,autore_nome:me.nome}]);
+    $('n-testo').value='';delete eventiCache[cid];await loadHist(cid);
+  }catch(e){setMsg('note-msg',errText(e),'err')}
+  finally{busy=false;const b=$('btn-note');if(b)b.disabled=false}
+}
+async function del(){
+  if(busy)return;busy=true;
+  try{await api.deleteCoppia(selId);selId=null;mode=null;await reload()}
+  catch(e){setMsg('form-msg',errText(e),'err')}
+  finally{busy=false}
+}
+
+/* ============================================================
+   AGENDA
+   ============================================================ */
+function fillSelect(id,options){
+  const el=$(id);const cur=el.value;
+  el.innerHTML=options.map(o=>`<option value="${esc(o.v)}">${esc(o.l)}</option>`).join('');
+  if(options.some(o=>o.v===cur))el.value=cur;
+}
+function agendaRows(){
+  const per=$('ag-periodo').value, y=$('ag-anno').value, chi=$('ag-chi').value, es=$('ag-esito').value, t=today();
+  const v=allApps().filter(x=>{
+    if(per==='prossimi'&&x.a.data<t)return false;
+    if(per==='passati'&&x.a.data>=t)return false;
+    if(y&&x.a.data.slice(0,4)!==y)return false;
+    if(chi==='__none'&&x.a.chi_nome)return false;
+    if(chi&&chi!=='__none'&&x.a.chi_nome!==chi)return false;
+    if(es==='__dasegnare'&&!isDaSegnare(x.a))return false;
+    if(es&&es!=='__dasegnare'&&(x.a.esito||'programmato')!==es)return false;
+    return true;
+  });
+  const k=x=>x.a.data+(x.a.ora||'');
+  return v.sort((p,q2)=>per==='prossimi'?k(p).localeCompare(k(q2)):k(q2).localeCompare(k(p)));
+}
+function renderAgenda(){
+  if(view!=='agenda')return;
+  fillSelect('ag-anno',[{v:'',l:'Tutti gli anni'}].concat(anni().map(y=>({v:y,l:y}))));
+  fillSelect('ag-chi',[{v:'',l:'Tutti'}].concat(persone().map(p=>({v:p,l:p}))).concat([{v:'__none',l:'Non indicato'}]));
+  fillSelect('ag-esito',[{v:'',l:'Tutti gli esiti'},{v:'__dasegnare',l:'Esito da segnare'}].concat(ESITI.map(e=>({v:e.k,l:e.l}))));
+  const ds=allApps().filter(x=>isDaSegnare(x.a)).length;
+  $('ag-warn').innerHTML=ds?`<div class="statsec"><div class="warnbox">${ds===1?'C\'è 1 appuntamento passato ancora «In programma»':'Ci sono '+ds+' appuntamenti passati ancora «In programma»'}. Apri la coppia e segna l'esito, così le statistiche restano esatte.</div></div>`:'';
+  if(!loaded){$('agenda').innerHTML='<div class="empty"><strong>Caricamento…</strong></div>';return}
+  const v=agendaRows();
+  if(!v.length){$('agenda').innerHTML='<div class="empty"><strong>Nessun appuntamento</strong>Con questi filtri non c\'è nulla. Gli appuntamenti si aggiungono dalla scheda di ogni coppia.</div>';$('ag-bar').hidden=true;return}
+  const groups={};v.forEach(x=>{const m=x.a.data.slice(0,7);groups[m]=(groups[m]||0)+1});
+  let html='',cur='';
+  v.forEach(x=>{
+    const m=x.a.data.slice(0,7);
+    if(m!==cur){cur=m;const n=groups[m];html+=`<div class="month"><span>${MESI[+m.slice(5)-1]} ${m.slice(0,4)}</span><span class="c">${n} ${n===1?'appuntamento':'appuntamenti'}</span></div>`}
+    const es=isDaSegnare(x.a)?{c:'dasegnare',l:'Esito da segnare'}:{c:x.a.esito||'programmato',l:ESITO_L[x.a.esito||'programmato']};
+    html+=`<button type="button" class="agrow" data-open="${esc(x.r.id)}">
+      <span class="when"><b>${esc(wd(x.a.data))}</b>${esc(x.a.ora||'ora n.d.')}</span>
+      <span class="who"><span class="names">${esc(coppia(x.r))}</span><span class="sub">${esc([x.a.tipo,x.a.chi_nome?'con '+x.a.chi_nome:'chi: non indicato',[x.r.citta,x.r.paese].filter(Boolean).join(', '),STATO_L[x.r.stato]].filter(Boolean).join(' · '))}</span></span>
+      <span class="pill es-${es.c}">${esc(es.l)}</span>
+    </button>`;
+  });
+  $('agenda').innerHTML=html;$('ag-bar').hidden=false;
+  $('ag-count').textContent=v.length+(v.length===1?' appuntamento':' appuntamenti')+' in elenco';
+}
+
+/* ============================================================
+   STATISTICHE
+   ============================================================ */
+function computeStats(sel){
+  const all=allApps();
+  const svolti=all.filter(x=>x.a.esito==='svolto');
+  const persi=all.filter(x=>x.a.esito==='annullato'||x.a.esito==='noshow');
+  const first={};
+  svolti.forEach(x=>{const f=first[x.r.id];if(!f||x.a.data<f.data)first[x.r.id]={data:x.a.data,r:x.r}});
+  const firsts=Object.values(first);
+  let keys,keyOf;
+  if(sel==='tutti'){
+    keys=[...new Set(svolti.map(x=>x.a.data.slice(0,4)).concat(persi.map(x=>x.a.data.slice(0,4))).concat(rows.filter(r=>r.data_firma).map(r=>r.data_firma.slice(0,4))))].sort();
+    keyOf=d=>d?d.slice(0,4):null;
+  }else{
+    keys=MESI.map((m,i)=>sel+'-'+String(i+1).padStart(2,'0'));
+    keyOf=d=>d&&d.slice(0,4)===sel?d.slice(0,7):null;
+  }
+  const inPer=d=>keyOf(d)!=null;
+  const data=keys.map(k=>{
+    const nuove=firsts.filter(f=>keyOf(f.data)===k);
+    return {k,app:svolti.filter(x=>keyOf(x.a.data)===k).length,ann:persi.filter(x=>keyOf(x.a.data)===k).length,
+      coppie:nuove.length,firm:nuove.filter(f=>f.r.stato==='confermato').length,
+      corso:nuove.filter(f=>f.r.stato!=='confermato'&&f.r.stato!=='perso').length,perse:nuove.filter(f=>f.r.stato==='perso').length,
+      contrMese:rows.filter(r=>r.stato==='confermato'&&keyOf(r.data_firma)===k).length};
+  });
+  const T=data.reduce((s,d)=>{['app','ann','coppie','firm','corso','perse','contrMese'].forEach(c=>s[c]+=d[c]);return s},{app:0,ann:0,coppie:0,firm:0,corso:0,perse:0,contrMese:0});
+  const pmap={};
+  svolti.filter(x=>inPer(x.a.data)).forEach(x=>{
+    const p=x.a.chi_nome||'Non indicato';const o=pmap[p]||(pmap[p]={app:0,cp:new Set(),firm:new Set()});
+    o.app++;o.cp.add(x.r.id);if(x.r.stato==='confermato')o.firm.add(x.r.id);
+  });
+  const fmap={};
+  firsts.filter(f=>inPer(f.data)).forEach(f=>{const k=f.r.fonte||'Non indicato';const o=fmap[k]||(fmap[k]={c:0,firm:0});o.c++;if(f.r.stato==='confermato')o.firm++});
+  const warn={
+    daSegnare:all.filter(x=>isDaSegnare(x.a)&&inPer(x.a.data)).length,
+    senzaFirma:rows.filter(r=>r.stato==='confermato'&&!r.data_firma).length,
+    firmateSenzaApp:rows.filter(r=>r.stato==='confermato'&&!first[r.id]).length
+  };
+  return {data,T,pmap,fmap,warn};
+}
+function renderStatistiche(){
+  if(view!=='statistiche')return;
+  const ys=anni();
+  fillSelect('st-anno',ys.map(y=>({v:y,l:'Anno '+y})).concat([{v:'tutti',l:'Tutti gli anni'}]));
+  const sel=$('st-anno').value||ys[0];
+  const {data,T,pmap,fmap,warn}=computeStats(sel);
+  const label=k=>sel==='tutti'?k:MESI[+k.slice(5)-1];
+  $('st-t1').textContent=sel==='tutti'?'Anno per anno':'Mese per mese, '+sel;
+  const decise=T.firm+T.perse;
+  $('kpis').innerHTML=`
+    <div class="stat"><div class="k">Appuntamenti svolti</div><div class="v">${T.app}</div><div class="s">${T.ann} annullati o non presentati</div></div>
+    <div class="stat"><div class="k">Coppie incontrate</div><div class="v">${T.coppie}</div><div class="s">primo appuntamento nel periodo</div></div>
+    <div class="stat"><div class="k">Concluse a contratto</div><div class="v">${T.firm}</div><div class="s">${T.corso} ancora in trattativa, ${T.perse} non procedono</div></div>
+    <div class="stat"><div class="k">Conversione</div><div class="v">${pct(T.firm,T.coppie)}</div><div class="s">${decise?'sulle sole decise: '+pct(T.firm,decise):'firmati su coppie incontrate'}</div></div>`;
+  const maxApp=Math.max(1,...data.map(d=>d.app));
+  $('st-table').innerHTML=`<thead><tr><th>${sel==='tutti'?'Anno':'Mese'}</th><th>Appuntamenti svolti</th><th>Annullati / non presentati</th><th>Coppie incontrate</th><th>Contratto firmato</th><th>In trattativa</th><th>Non procedono</th><th>Conversione</th><th>Contratti firmati nel periodo</th></tr></thead>
+  <tbody>${data.map(d=>`<tr class="${d.app||d.contrMese||d.ann?'':'zero'}"><td>${esc(label(d.k))}</td><td><span class="bar" style="width:${Math.round(d.app/maxApp*48)}px"></span>${d.app}</td><td>${d.ann}</td><td>${d.coppie}</td><td>${d.firm}</td><td>${d.corso}</td><td>${d.perse}</td><td class="conv">${pct(d.firm,d.coppie)}</td><td>${d.contrMese}</td></tr>`).join('')}</tbody>
+  <tfoot><tr><td>Totale</td><td>${T.app}</td><td>${T.ann}</td><td>${T.coppie}</td><td>${T.firm}</td><td>${T.corso}</td><td>${T.perse}</td><td class="conv">${pct(T.firm,T.coppie)}</td><td>${T.contrMese}</td></tr></tfoot>`;
+  const pr=Object.entries(pmap).sort((a,b)=>b[1].app-a[1].app);
+  $('st-people').innerHTML=pr.length?`<thead><tr><th>Fatto da</th><th>Appuntamenti svolti</th><th>Coppie seguite</th><th>Contratto firmato</th><th>Conversione</th></tr></thead>
+    <tbody>${pr.map(([p,o])=>`<tr><td>${esc(p)}</td><td>${o.app}</td><td>${o.cp.size}</td><td>${o.firm.size}</td><td class="conv">${pct(o.firm.size,o.cp.size)}</td></tr>`).join('')}</tbody>`
+    :'<tbody><tr><td style="color:var(--muted)">Nessun appuntamento svolto nel periodo.</td></tr></tbody>';
+  const fr=Object.entries(fmap).sort((a,b)=>b[1].c-a[1].c);
+  $('st-fonti').innerHTML=fr.length?`<thead><tr><th>Canale</th><th>Coppie incontrate</th><th>Contratto firmato</th><th>Conversione</th></tr></thead>
+    <tbody>${fr.map(([k,o])=>`<tr><td>${esc(k)}</td><td>${o.c}</td><td>${o.firm}</td><td class="conv">${pct(o.firm,o.c)}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><td>Totale</td><td>${T.coppie}</td><td>${T.firm}</td><td class="conv">${pct(T.firm,T.coppie)}</td></tr></tfoot>`
+    :'<tbody><tr><td style="color:var(--muted)">Nessuna coppia incontrata nel periodo.</td></tr></tbody>';
+  const w=[];
+  if(warn.daSegnare)w.push(warn.daSegnare===1?'1 appuntamento passato è ancora «In programma» e non viene contato: segna l\'esito dall\'Agenda.':warn.daSegnare+' appuntamenti passati sono ancora «In programma» e non vengono contati: segna l\'esito dall\'Agenda.');
+  if(warn.senzaFirma)w.push(warn.senzaFirma===1?'1 coppia con contratto firmato non ha la data di firma: non compare nella colonna «Contratti firmati nel periodo».':warn.senzaFirma+' coppie con contratto firmato non hanno la data di firma: non compaiono nella colonna «Contratti firmati nel periodo».');
+  if(warn.firmateSenzaApp)w.push(warn.firmateSenzaApp===1?'1 coppia firmata non ha nessun appuntamento svolto registrato: non rientra nella conversione.':warn.firmateSenzaApp+' coppie firmate non hanno nessun appuntamento svolto registrato: non rientrano nella conversione.');
+  $('st-warn').innerHTML=w.length?`<div class="statsec">${w.map(t=>`<div class="warnbox">${esc(t)}</div>`).join('')}</div>`:'';
+}
+window.__registroStats=computeStats;
+
+/* ============================================================
+   SQUADRA
+   ============================================================ */
+function renderSquadra(){
+  if(view!=='squadra'||!isAdmin())return;
+  $('app-link').value=appUrl();
+  $('team').innerHTML=`<thead><tr><th>Nome</th><th>Email</th><th>Ruolo</th><th>Attivo</th></tr></thead><tbody>${staff.map(s=>`<tr>
+    <td>${esc(s.nome)}</td><td>${esc(s.email)}</td>
+    <td><select data-ruolo="${esc(s.email)}" aria-label="Ruolo di ${esc(s.nome)}"${s.email===me.email?' disabled':''}><option value="staff"${s.ruolo==='staff'?' selected':''}>Collaboratore</option><option value="admin"${s.ruolo==='admin'?' selected':''}>Amministratore</option></select></td>
+    <td><input type="checkbox" data-attivo="${esc(s.email)}" aria-label="${esc(s.nome)} attivo"${s.attivo?' checked':''}${s.email===me.email?' disabled':''} style="width:22px;height:22px;min-height:0"></td></tr>`).join('')}</tbody>`;
+}
+async function addTeam(){
+  const nome=$('t-nome').value.trim(), email=$('t-email').value.trim().toLowerCase(), ruolo=$('t-ruolo').value;
+  if(!nome||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){setMsg('team-msg','Inserisci un nome e un\'email valida.','err');return}
+  try{await api.upsertStaff({email,nome,ruolo,attivo:true});$('t-nome').value='';$('t-email').value='';setMsg('team-msg',nome+' aggiunto. Mandagli il link dell\'app: al primo accesso sceglie «Primo accesso».','saved');await reload()}
+  catch(e){setMsg('team-msg',errText(e),'err')}
+}
+async function patchTeam(email,patch){
+  try{await api.updateStaff(email,patch);await reload()}catch(e){setMsg('team-msg',errText(e),'err');renderSquadra()}
+}
+
+/* ============================================================
+   ESPORTAZIONE CSV
+   ============================================================ */
+const cell=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+function downloadCsv(name,lines){
+  const blob=new Blob(['﻿'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name+'-'+today()+'.csv';
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
+}
+function exportCsv(){
+  const cols=[['Sposo/a 1','sposo1'],['Sposo/a 2','sposo2'],['Email','email'],['Telefono','telefono'],['Paese','paese'],['Città','citta'],['Lingua','lingua'],
+    ['Canale','fonte'],['Dettaglio canale','fonte_dettaglio'],['Primo contatto','primo_contatto'],['Data matrimonio','data_matrimonio'],['Data flessibile','data_flessibile'],
+    ['Ospiti','ospiti'],['Budget','budget'],['Pacchetto','pacchetto'],['Marina','marina'],['Appuntamenti','_app'],['Stato','_stato'],['Data firma','data_firma'],['Note','note']];
+  const lines=[cols.map(c=>cell(c[0])).join(';')];
+  rows.forEach(r=>lines.push(cols.map(([,k])=>{
+    if(k==='_app')return cell(apps(r).map(a=>appStr(a)+' ['+ESITO_L[a.esito||'programmato']+']').join(' | '));
+    if(k==='_stato')return cell(STATO_L[r.stato]||r.stato);
+    if(k==='marina')return cell(r.marina?'Sì':'No');
+    return cell(r[k]);
+  }).join(';')));
+  downloadCsv('registro-sposi',lines);
+}
+function exportAgenda(){
+  const lines=[['Data','Ora','Coppia','Tipo','Fatto da','Esito','Nota','Paese','Canale','Stato coppia'].map(cell).join(';')];
+  agendaRows().forEach(x=>lines.push([x.a.data,x.a.ora,coppia(x.r),x.a.tipo,x.a.chi_nome,ESITO_L[x.a.esito||'programmato'],x.a.nota,x.r.paese,x.r.fonte,STATO_L[x.r.stato]].map(cell).join(';')));
+  downloadCsv('appuntamenti',lines);
+}
+
+/* ============================================================
+   EVENTI
+   ============================================================ */
+function renderAll(){renderList();renderStats();renderDetail();renderAgenda();renderStatistiche();renderSquadra()}
+function openCouple(id){selId=id;mode='edit';setView('coppie',true);renderList();renderDetail();window.scrollTo({top:$('main').offsetTop-10})}
+document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('#form'))dirty=true});
+document.addEventListener('change',e=>{
+  if(e.target.closest&&e.target.closest('#form'))dirty=true;
+  const r=e.target.dataset&&e.target.dataset.ruolo;if(r){patchTeam(r,{ruolo:e.target.value});return}
+  const at=e.target.dataset&&e.target.dataset.attivo;if(at){patchTeam(at,{attivo:e.target.checked});return}
+});
+document.addEventListener('click',e=>{
+  const au=e.target.closest('[data-auth]');
+  if(au){const m=au.dataset.auth;if(m==='esci'){api.signOut().then(()=>showAuth('entra'))}else{authMsg='';showAuth(m)}return}
+  const tab=e.target.closest('[data-view]');if(tab){setView(tab.dataset.view,true);return}
+  const li=e.target.closest('.list li button');
+  if(li){selId=li.dataset.id;mode='edit';renderList();renderDetail();if(window.innerWidth<=900)window.scrollTo({top:$('main').offsetTop-10});return}
+  const ag=e.target.closest('[data-open]');if(ag){openCouple(ag.dataset.open);return}
+  const ch=e.target.closest('.chip');if(ch){filt=ch.dataset.k;renderList();return}
+  const rm=e.target.closest('[data-rm]');if(rm){const row=rm.closest('.approw');if(row)row.remove();dirty=true;return}
+  const id=e.target.id;
+  if(id==='btn-new'){selId=null;mode='new';setView('coppie',true);renderList();renderDetail();const f=$('f-sposo1');if(f)f.focus();return}
+  if(id==='btn-back'||id==='btn-cancel'){mode=null;selId=null;renderList();renderDetail();return}
+  if(id==='btn-addapp'){
+    const a={id:'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),data:'',ora:'',tipo:'Videochiamata',chi_nome:me.nome,esito:'programmato',nota:''};
+    dirty=true;$('apps').insertAdjacentHTML('beforeend',appRowHtml(a));const el=$('ap-data-'+a.id);if(el)el.focus();return}
+  if(id==='btn-note'){addNote();return}
+  if(id==='btn-export'){exportCsv();return}
+  if(id==='btn-export-ag'){exportAgenda();return}
+  if(id==='btn-logout'){api.signOut().then(()=>{me=null;showAuth('entra')});return}
+  if(id==='btn-copy'){const inp=$('app-link');const done=()=>setMsg('team-msg','Link copiato.','saved');
+    if(navigator.clipboard)navigator.clipboard.writeText(inp.value).then(done,()=>{inp.select()});else{inp.select();document.execCommand&&document.execCommand('copy');done()}return}
+  if(id==='btn-del'){$('del-zone').innerHTML='<span class="confirm">Eliminare per sempre questa scheda e i suoi appuntamenti? <button type="button" class="danger" id="btn-del-yes">Sì, elimina</button><button type="button" id="btn-del-no">Annulla</button></span>';return}
+  if(id==='btn-del-no'){renderDetail();return}
+  if(id==='btn-del-yes'){del();return}
+});
+document.addEventListener('submit',e=>{
+  e.preventDefault();
+  if(e.target.id==='form')save();
+  else if(e.target.id==='f-auth')submitAuth();
+  else if(e.target.id==='team-form')addTeam();
+});
+$('q').addEventListener('input',e=>{q=e.target.value;renderList()});
+$('sort').addEventListener('change',e=>{sortBy=e.target.value;renderList()});
+['ag-periodo','ag-anno','ag-chi','ag-esito'].forEach(id=>$(id).addEventListener('change',renderAgenda));
+$('st-anno').addEventListener('change',renderStatistiche);
+// Aggiorna i dati quando si torna sull'app e ogni 2 minuti, così si vedono le modifiche dei colleghi
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me&&!busy)reload()});
+setInterval(()=>{if(me&&!busy&&document.visibilityState==='visible')reload()},120000);
+
+/* ============================================================
+   AVVIO
+   ============================================================ */
+(async function boot(){
+  const recovering=/type=recovery/.test(location.hash);
+  if(api.demo){me=await api.me();showApp();await reload();return}
+  api.onAuth((evn)=>{
+    if(evn==='PASSWORD_RECOVERY')showAuth('nuovapw');
+    else if(evn==='SIGNED_OUT'){me=null;showAuth('entra')}
+  });
+  if(recovering){showAuth('nuovapw');return}
+  try{await afterLogin()}catch(e){showAuth('entra','!'+errText(e))}
+})();
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>
