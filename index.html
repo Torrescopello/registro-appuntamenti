@@ -339,8 +339,9 @@ const NOTE_TIPI=['Nota','Email','Telefonata','Videochiamata','Visita','Proposta'
 /* ---------- VERSIONE ----------
    A ogni modifica: aumentare VERSIONE, aggiungere la voce in cima a NOVITA
    e aggiornare CACHE in sw.js con lo stesso numero. */
-const VERSIONE='1.3';
+const VERSIONE='1.4';
 const NOVITA=[
+  {v:'1.4',d:'10 novembre 2026',t:['Un appuntamento nel futuro non può essere segnato come svolto: l\'app lo spiega con un messaggio.','«Fatto da» è obbligatorio per ogni appuntamento e deve essere il nome di una persona, non «Torre di Scopello».']},
   {v:'1.3',d:'10 novembre 2026',t:['Pulsante «✓ Svolto» nell\'Agenda e «✓ Segna come svolto» nella scheda: un tocco e l\'appuntamento è segnato e salvato.','«Fatto da» propone l\'ultimo nome usato sul dispositivo, non più il nome dell\'account.']},
   {v:'1.2',d:'10 novembre 2026',t:['Tolta la scheda Squadra per un\'app più semplice. Restano Coppie, Agenda e Statistiche.']},
   {v:'1.1',d:'10 novembre 2026',t:['Il numero di versione è ora piccolo, sotto il titolo: toccalo per vedere le novità.']},
@@ -466,7 +467,9 @@ function setData(d){
 const apps=r=>appsBy[r.id]||[];
 const allApps=()=>{const byId=Object.fromEntries(rows.map(r=>[r.id,r]));return appsAll.filter(a=>a.data&&byId[a.coppia_id]).map(a=>({r:byId[a.coppia_id],a}))};
 function nextApp(r){const t=today();return apps(r).filter(a=>a.esito==='programmato'&&a.data>=t).sort((x,y)=>(x.data+(x.ora||'')).localeCompare(y.data+(y.ora||'')))[0]}
-function persone(){const s=[];staff.filter(p=>p.attivo).forEach(p=>{if(!s.includes(p.nome))s.push(p.nome)});appsAll.forEach(a=>{if(a.chi_nome&&!s.includes(a.chi_nome))s.push(a.chi_nome)});return s}
+const chiValido=n=>{const v=String(n||'').trim().toLowerCase();return !!v&&v!=='torre di scopello'&&!(me&&v===String(me.nome||'').trim().toLowerCase())};
+function persone(){const s=[];staff.filter(p=>p.attivo&&p.ruolo!=='admin').forEach(p=>{if(chiValido(p.nome)&&!s.includes(p.nome))s.push(p.nome)});appsAll.forEach(a=>{if(chiValido(a.chi_nome)&&!s.includes(a.chi_nome))s.push(a.chi_nome)});return s}
+const MSG_FUTURO=d=>'L\'appuntamento del '+fmtD(d)+' è nel futuro: potrai segnarlo come svolto da quel giorno in poi.';
 function anni(){const s=new Set([String(new Date().getFullYear())]);appsAll.forEach(a=>{if(a.data)s.add(a.data.slice(0,4))});rows.forEach(r=>{if(r.data_firma)s.add(r.data_firma.slice(0,4))});return [...s].sort().reverse()}
 const isAdmin=()=>me&&me.ruolo==='admin';
 
@@ -626,14 +629,14 @@ function renderStats(){
   $('upcoming').innerHTML=up.length?up.slice(0,6).map(x=>`<li><span class="d">${esc(fmtD(x.a.data))}${x.a.ora?' '+esc(x.a.ora):''}</span><span class="n">${esc(coppia(x.r))}${x.a.tipo?' · '+esc(x.a.tipo):''}${x.a.chi_nome?' · '+esc(x.a.chi_nome):''}</span></li>`).join(''):'<li style="color:var(--muted)">Nessun appuntamento in arrivo.</li>';
   $('tab-agenda-n').textContent=up.length?String(up.length):'';
 }
-function chiDefault(){return lsGet('rs-chi')}
+function chiDefault(){const v=lsGet('rs-chi');return chiValido(v)?v:''}
 function appRowHtml(a){
   const id=esc(a.id);
   return `<div class="approw" data-aid="${id}">
     <div class="f half"><label for="ap-data-${id}">Data</label><input type="date" id="ap-data-${id}" data-k="data" value="${esc(a.data)}"></div>
     <div class="f half"><label for="ap-ora-${id}">Ora</label><input type="time" id="ap-ora-${id}" data-k="ora" value="${esc(a.ora)}"></div>
     <div class="f"><label for="ap-tipo-${id}">Tipo</label><select id="ap-tipo-${id}" data-k="tipo"><option value="">Seleziona…</option>${opt(TIPI_APP,a.tipo)}</select></div>
-    <div class="f"><label for="ap-chi-${id}">Fatto da</label><input id="ap-chi-${id}" data-k="chi_nome" list="dl-persone" value="${esc(a.chi_nome)}" placeholder="Nome di chi fa l'incontro" autocomplete="off"></div>
+    <div class="f"><label for="ap-chi-${id}">Fatto da *</label><input id="ap-chi-${id}" data-k="chi_nome" list="dl-persone" value="${esc(a.chi_nome)}" placeholder="Nome di chi fa l'incontro" autocomplete="off"></div>
     <div class="f"><label for="ap-esito-${id}">Esito</label><select id="ap-esito-${id}" data-k="esito">${ESITI.map(e=>`<option value="${e.k}"${e.k===(a.esito||'programmato')?' selected':''}>${esc(e.l)}</option>`).join('')}</select></div>
     <div class="f wide"><label for="ap-nota-${id}">Nota breve</label><input id="ap-nota-${id}" data-k="nota" value="${esc(a.nota)}" placeholder="es. presenti anche i genitori di lei" autocomplete="off"></div>
     <div class="rowbtns">${(a.esito||'programmato')==='programmato'?`<button type="button" class="btn-svolto" data-svolto-form="${id}">✓ Segna come svolto</button>`:''}<button type="button" class="ghost" data-rm="${id}">Rimuovi</button></div>
@@ -737,8 +740,14 @@ async function save(){
   if(!f.sposo1&&!f.sposo2){setMsg('form-msg','Inserisci almeno un nome.','err');$('f-sposo1').focus();return}
   const senzaData=list.find(a=>!a.data);
   if(senzaData){setMsg('form-msg','Ogni appuntamento ha bisogno di una data.','err');const el=$('ap-data-'+senzaData.id);if(el)el.focus();return}
-  const senzaChi=list.find(a=>a.esito==='svolto'&&!a.chi_nome);
-  if(senzaChi){setMsg('form-msg','Indica chi ha fatto l\'appuntamento svolto.','err');const el=$('ap-chi-'+senzaChi.id);if(el)el.focus();return}
+  const rowErr=(a,txt,field)=>{setMsg('form-msg',txt,'err');const row=document.querySelector('#apps .approw[data-aid="'+a.id+'"]');const m=row&&row.querySelector('.rowmsg');if(m){m.textContent=txt;m.hidden=false}const el=$(field+a.id);if(el){el.focus();el.scrollIntoView({block:'center'})}};
+  document.querySelectorAll('#apps .rowmsg').forEach(m=>{m.hidden=true});
+  const senzaChi=list.find(a=>!a.chi_nome);
+  if(senzaChi){rowErr(senzaChi,'Scrivi in «Fatto da» il nome di chi fa l\'appuntamento: è obbligatorio.','ap-chi-');return}
+  const chiAccount=list.find(a=>!chiValido(a.chi_nome));
+  if(chiAccount){rowErr(chiAccount,'In «Fatto da» scrivi il nome della persona (es. Gabriele), non «'+chiAccount.chi_nome+'».','ap-chi-');return}
+  const futuro=list.find(a=>(a.esito==='svolto'||a.esito==='noshow')&&a.data>today());
+  if(futuro){rowErr(futuro,futuro.esito==='svolto'?MSG_FUTURO(futuro.data):'L\'appuntamento del '+fmtD(futuro.data)+' è nel futuro: non puoi ancora segnare che non si sono presentati.','ap-esito-');return}
   if(f.stato==='confermato'&&!f.data_firma)f.data_firma=today();
   list.forEach(a=>{if(a.chi_nome)lsSet('rs-chi',a.chi_nome)});
   busy=true;$('btn-save').disabled=true;setMsg('form-msg','Salvataggio…');
@@ -789,16 +798,20 @@ async function addNote(){
 }
 function markSvoltoInForm(aid){
   const row=document.querySelector('#apps .approw[data-aid="'+aid+'"]');if(!row)return;
+  const msg=row.querySelector('.rowmsg'), d=$('ap-data-'+aid).value;
+  if(!d){msg.textContent='Inserisci prima la data dell\'appuntamento.';msg.hidden=false;$('ap-data-'+aid).focus();return}
+  if(d>today()){msg.textContent=MSG_FUTURO(d);msg.hidden=false;return}
   const sel=$('ap-esito-'+aid);if(sel)sel.value='svolto';dirty=true;
   const b=row.querySelector('[data-svolto-form]');if(b)b.remove();
-  const chi=$('ap-chi-'+aid), msg=row.querySelector('.rowmsg');
-  if(!chi.value.trim()){msg.textContent='Scrivi chi ha fatto l\'appuntamento, poi premi «Salva modifiche».';msg.hidden=false;chi.focus();chi.scrollIntoView({block:'center'});return}
-  save();
+  const chi=$('ap-chi-'+aid);
+  if(!chiValido(chi.value)){msg.textContent='Scrivi in «Fatto da» il nome di chi ha fatto l\'appuntamento, poi premi «Salva modifiche».';msg.hidden=false;chi.focus();chi.scrollIntoView({block:'center'});return}
+  msg.hidden=true;save();
 }
 async function svoltoDaAgenda(aid){
   if(busy)return;
   const a=appsAll.find(x=>x.id===aid);if(!a)return;
-  if(!a.chi_nome){openCouple(a.coppia_id);setTimeout(()=>markSvoltoInForm(aid),50);return}
+  if(a.data>today()){notice(MSG_FUTURO(a.data));return}
+  if(!chiValido(a.chi_nome)){openCouple(a.coppia_id);setTimeout(()=>markSvoltoInForm(aid),50);return}
   busy=true;
   try{
     await api.updateApp(aid,{esito:'svolto'});
