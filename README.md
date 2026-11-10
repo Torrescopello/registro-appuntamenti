@@ -21,7 +21,7 @@ Si apre dal browser su iPad, telefono e computer e si installa sulla schermata H
 
 ## Messa in funzione
 
-1. **Supabase**: crea un progetto (regione Europa), apri *SQL Editor*, incolla `supabase/schema.sql`, scrivi la tua email nella sezione «PRIMO AMMINISTRATORE» e premi *Run*.
+1. **Supabase**: crea un progetto (regione Europa), apri *SQL Editor*, incolla `supabase/schema.sql`, scrivi l'email aziendale nella sezione «PRIMO AMMINISTRATORE» e premi *Run*.
 2. **Supabase > Authentication > URL Configuration**: imposta *Site URL* sull'indirizzo dell'app (es. `https://NOME-ACCOUNT.github.io/registro-appuntamenti/`).
 3. **Supabase > Project Settings > API**: copia *Project URL* e la chiave *anon public* dentro `config.js`.
 4. **GitHub > Settings > Pages**: pubblica dal ramo `main`, cartella `/ (root)`.

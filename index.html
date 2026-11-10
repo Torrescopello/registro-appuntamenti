@@ -405,7 +405,7 @@ function demoApi(){
   const now=()=>new Date().toISOString();
   const y=new Date().getFullYear();
   const m=(mm,dd,yy=y)=>yy+'-'+String(mm).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
-  const staff=[{email:'pierluigi@esempio.it',nome:'Pierluigi',ruolo:'admin',attivo:true},{email:'marina@esempio.it',nome:'Marina Guccione',ruolo:'staff',attivo:true},{email:'gabriele@esempio.it',nome:'Gabriele',ruolo:'staff',attivo:true}];
+  const staff=[{email:'info@esempio.it',nome:'Torre di Scopello',ruolo:'admin',attivo:true},{email:'pierluigi@esempio.it',nome:'Pierluigi',ruolo:'staff',attivo:true},{email:'marina@esempio.it',nome:'Marina Guccione',ruolo:'staff',attivo:true},{email:'gabriele@esempio.it',nome:'Gabriele',ruolo:'staff',attivo:true}];
   const c=(o)=>Object.assign({id:uid(),marina:false,lingua:'Inglese',pacchetto:'Da definire',creato_il:now(),aggiornato_il:now()},o);
   const coppie=[
     c({sposo1:'Emma',sposo2:'James',paese:'Stati Uniti',citta:'Boston',fonte:'La Lista',stato:'confermato',data_firma:m(3,10),data_matrimonio:m(9,18,y+1),ospiti:'60-70',pacchetto:'Premium',marina:true,note:'Esempio. Sognano la cerimonia al tramonto.'}),
@@ -424,7 +424,7 @@ function demoApi(){
   const clone=x=>JSON.parse(JSON.stringify(x));
   return {
     demo:true,
-    async session(){return {user:{email:'pierluigi@esempio.it'}}},
+    async session(){return {user:{email:'info@esempio.it'}}},
     onAuth(){},async signIn(){},async signUp(){},async reset(){},async setPassword(){},async signOut(){},
     async me(){return staff[0]},
     async loadAll(){return clone({coppie,appuntamenti,staff})},
@@ -619,17 +619,14 @@ function renderStats(){
   $('upcoming').innerHTML=up.length?up.slice(0,6).map(x=>`<li><span class="d">${esc(fmtD(x.a.data))}${x.a.ora?' '+esc(x.a.ora):''}</span><span class="n">${esc(coppia(x.r))}${x.a.tipo?' · '+esc(x.a.tipo):''}${x.a.chi_nome?' · '+esc(x.a.chi_nome):''}</span></li>`).join(''):'<li style="color:var(--muted)">Nessun appuntamento in arrivo.</li>';
   $('tab-agenda-n').textContent=up.length?String(up.length):'';
 }
-function chiOptions(val){
-  const list=persone();if(val&&!list.includes(val))list.push(val);
-  return '<option value="">Seleziona…</option>'+list.map(p=>`<option${p===val?' selected':''}>${esc(p)}</option>`).join('');
-}
+function chiDefault(){return lsGet('rs-chi')||me.nome}
 function appRowHtml(a){
   const id=esc(a.id);
   return `<div class="approw" data-aid="${id}">
     <div class="f half"><label for="ap-data-${id}">Data</label><input type="date" id="ap-data-${id}" data-k="data" value="${esc(a.data)}"></div>
     <div class="f half"><label for="ap-ora-${id}">Ora</label><input type="time" id="ap-ora-${id}" data-k="ora" value="${esc(a.ora)}"></div>
     <div class="f"><label for="ap-tipo-${id}">Tipo</label><select id="ap-tipo-${id}" data-k="tipo"><option value="">Seleziona…</option>${opt(TIPI_APP,a.tipo)}</select></div>
-    <div class="f"><label for="ap-chi-${id}">Fatto da</label><select id="ap-chi-${id}" data-k="chi_nome">${chiOptions(a.chi_nome)}</select></div>
+    <div class="f"><label for="ap-chi-${id}">Fatto da</label><input id="ap-chi-${id}" data-k="chi_nome" list="dl-persone" value="${esc(a.chi_nome)}" placeholder="Nome di chi fa l'incontro" autocomplete="off"></div>
     <div class="f"><label for="ap-esito-${id}">Esito</label><select id="ap-esito-${id}" data-k="esito">${ESITI.map(e=>`<option value="${e.k}"${e.k===(a.esito||'programmato')?' selected':''}>${esc(e.l)}</option>`).join('')}</select></div>
     <div class="f wide"><label for="ap-nota-${id}">Nota breve</label><input id="ap-nota-${id}" data-k="nota" value="${esc(a.nota)}" placeholder="es. presenti anche i genitori di lei" autocomplete="off"></div>
     <button type="button" class="ghost rm" data-rm="${id}">Rimuovi</button>
@@ -688,7 +685,8 @@ function renderDetail(){
     </div>
   </form>
   ${mode==='edit'?'<div class="hist" id="hist"></div>':''}
-  <datalist id="dl-paesi">${PAESI.map(p=>`<option value="${esc(p)}">`).join('')}</datalist>`;
+  <datalist id="dl-paesi">${PAESI.map(p=>`<option value="${esc(p)}">`).join('')}</datalist>
+  <datalist id="dl-persone">${persone().map(p=>`<option value="${esc(p)}">`).join('')}</datalist>`;
   if(mode==='edit')loadHist(r.id);
 }
 function renderHist(cid,list){
@@ -734,6 +732,7 @@ async function save(){
   const senzaChi=list.find(a=>a.esito==='svolto'&&!a.chi_nome);
   if(senzaChi){setMsg('form-msg','Indica chi ha fatto l\'appuntamento svolto.','err');const el=$('ap-chi-'+senzaChi.id);if(el)el.focus();return}
   if(f.stato==='confermato'&&!f.data_firma)f.data_firma=today();
+  list.forEach(a=>{if(a.chi_nome)lsSet('rs-chi',a.chi_nome)});
   busy=true;$('btn-save').disabled=true;setMsg('form-msg','Salvataggio…');
   try{
     let cid, eventi=[];
@@ -985,7 +984,7 @@ document.addEventListener('click',e=>{
   if(id==='btn-new'){selId=null;mode='new';setView('coppie',true);renderList();renderDetail();const f=$('f-sposo1');if(f)f.focus();return}
   if(id==='btn-back'||id==='btn-cancel'){mode=null;selId=null;renderList();renderDetail();return}
   if(id==='btn-addapp'){
-    const a={id:'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),data:'',ora:'',tipo:'Videochiamata',chi_nome:me.nome,esito:'programmato',nota:''};
+    const a={id:'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),data:'',ora:'',tipo:'Videochiamata',chi_nome:chiDefault(),esito:'programmato',nota:''};
     dirty=true;$('apps').insertAdjacentHTML('beforeend',appRowHtml(a));const el=$('ap-data-'+a.id);if(el)el.focus();return}
   if(id==='btn-note'){addNote();return}
   if(id==='btn-export'){exportCsv();return}

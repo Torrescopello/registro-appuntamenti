@@ -159,8 +159,8 @@ create trigger solo_staff_registra before insert on auth.users
 
 -- ============================================================
 -- PRIMO AMMINISTRATORE
--- Sostituisci email e nome con i tuoi (email in minuscolo), poi Run.
+-- Sostituisci l'email con quella aziendale (in minuscolo), poi Run.
 -- ============================================================
 insert into public.staff (email, nome, ruolo)
-values ('la-tua-email@esempio.it', 'Pierluigi', 'admin')
+values ('email-aziendale@esempio.it', 'Torre di Scopello', 'admin')
 on conflict (email) do update set ruolo = 'admin', attivo = true, nome = excluded.nome;
